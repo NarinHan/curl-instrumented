@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -1541,7 +1546,10 @@ void Curl_ssl_peer_cleanup(struct ssl_peer *peer)
   free(peer->sni);
   free(peer->hostname);
   peer->hostname = peer->sni = peer->dispname = NULL;
-  peer->type = CURL_SSL_PEER_DNS;
+    {  // Begin logged block
+    peer->type = CURL_SSL_PEER_DNS;
+    LOG_VAR_INT(peer->type); // Auto-logged
+    }  // End logged block
 }
 
 static void cf_close(struct Curl_cfilter *cf, struct Curl_easy *data)

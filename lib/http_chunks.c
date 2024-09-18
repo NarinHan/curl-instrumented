@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -83,8 +88,14 @@ void Curl_httpchunk_init(struct Curl_easy *data, struct Curl_chunker *ch,
 {
   (void)data;
   ch->hexindex = 0;      /* start at 0 */
-  ch->state = CHUNK_HEX; /* we get hex first! */
-  ch->last_code = CHUNKE_OK;
+    {  // Begin logged block
+    ch->state = CHUNK_HEX; /* we get hex first! */
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_OK;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
   Curl_dyn_init(&ch->trailer, DYN_H1_TRAILER);
   ch->ignore_body = ignore_body;
 }
@@ -94,8 +105,14 @@ void Curl_httpchunk_reset(struct Curl_easy *data, struct Curl_chunker *ch,
 {
   (void)data;
   ch->hexindex = 0;      /* start at 0 */
-  ch->state = CHUNK_HEX; /* we get hex first! */
-  ch->last_code = CHUNKE_OK;
+    {  // Begin logged block
+    ch->state = CHUNK_HEX; /* we get hex first! */
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_OK;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
   Curl_dyn_reset(&ch->trailer);
   ch->ignore_body = ignore_body;
 }
@@ -136,8 +153,14 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
     else
       result = Curl_client_write(data, CLIENTWRITE_BODY, (char *)buf, blen);
     if(result) {
-      ch->state = CHUNK_FAILED;
-      ch->last_code = CHUNKE_PASSTHRU_ERROR;
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_PASSTHRU_ERROR;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
       return result;
     }
   }
@@ -148,8 +171,14 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
       if(ISXDIGIT(*buf)) {
         if(ch->hexindex >= CHUNK_MAXNUM_LEN) {
           failf(data, "chunk hex-length longer than %d", CHUNK_MAXNUM_LEN);
-          ch->state = CHUNK_FAILED;
-          ch->last_code = CHUNKE_TOO_LONG_HEX; /* longer than we support */
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_TOO_LONG_HEX; /* longer than we support */
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
           return CURLE_RECV_ERROR;
         }
         ch->hexbuffer[ch->hexindex++] = *buf;
@@ -162,8 +191,14 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
           /* This is illegal data, we received junk where we expected
              a hexadecimal digit. */
           failf(data, "chunk hex-length char not a hex digit: 0x%x", *buf);
-          ch->state = CHUNK_FAILED;
-          ch->last_code = CHUNKE_ILLEGAL_HEX;
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_ILLEGAL_HEX;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
           return CURLE_RECV_ERROR;
         }
 
@@ -171,11 +206,20 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
         ch->hexbuffer[ch->hexindex] = 0;
         if(curlx_strtoofft(ch->hexbuffer, NULL, 16, &ch->datasize)) {
           failf(data, "chunk hex-length not valid: '%s'", ch->hexbuffer);
-          ch->state = CHUNK_FAILED;
-          ch->last_code = CHUNKE_ILLEGAL_HEX;
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_ILLEGAL_HEX;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
           return CURLE_RECV_ERROR;
         }
-        ch->state = CHUNK_LF; /* now wait for the CRLF */
+    {  // Begin logged block
+    ch->state = CHUNK_LF; /* now wait for the CRLF */
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
       }
       break;
 
@@ -184,10 +228,16 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
       if(*buf == 0x0a) {
         /* we are now expecting data to come, unless size was zero! */
         if(0 == ch->datasize) {
-          ch->state = CHUNK_TRAILER; /* now check for trailers */
+    {  // Begin logged block
+    ch->state = CHUNK_TRAILER; /* now check for trailers */
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
         }
         else {
-          ch->state = CHUNK_DATA;
+    {  // Begin logged block
+    ch->state = CHUNK_DATA;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
           CURL_TRC_WRITE(data, "http_chunked, chunk start of %"
                          FMT_OFF_T " bytes", ch->datasize);
         }
@@ -215,8 +265,14 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
           result = Curl_client_write(data, CLIENTWRITE_BODY,
                                     (char *)buf, piece);
         if(result) {
-          ch->state = CHUNK_FAILED;
-          ch->last_code = CHUNKE_PASSTHRU_ERROR;
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_PASSTHRU_ERROR;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
           return result;
         }
       }
@@ -231,7 +287,10 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
 
       if(0 == ch->datasize)
         /* end of data this round, we now expect a trailing CRLF */
-        ch->state = CHUNK_POSTLF;
+    {  // Begin logged block
+    ch->state = CHUNK_POSTLF;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
       break;
 
     case CHUNK_POSTLF:
@@ -240,8 +299,14 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
         Curl_httpchunk_reset(data, ch, ch->ignore_body);
       }
       else if(*buf != 0x0d) {
-        ch->state = CHUNK_FAILED;
-        ch->last_code = CHUNKE_BAD_CHUNK;
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_BAD_CHUNK;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
         return CURLE_RECV_ERROR;
       }
       buf++;
@@ -259,8 +324,14 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
           size_t trlen;
           result = Curl_dyn_addn(&ch->trailer, (char *)STRCONST("\x0d\x0a"));
           if(result) {
-            ch->state = CHUNK_FAILED;
-            ch->last_code = CHUNKE_OUT_OF_MEMORY;
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_OUT_OF_MEMORY;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
             return result;
           }
           tr = Curl_dyn_ptr(&ch->trailer);
@@ -277,28 +348,46 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
                                          CLIENTWRITE_TRAILER,
                                          tr, trlen);
             if(result) {
-              ch->state = CHUNK_FAILED;
-              ch->last_code = CHUNKE_PASSTHRU_ERROR;
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_PASSTHRU_ERROR;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
               return result;
             }
           }
           Curl_dyn_reset(&ch->trailer);
-          ch->state = CHUNK_TRAILER_CR;
+    {  // Begin logged block
+    ch->state = CHUNK_TRAILER_CR;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
           if(*buf == 0x0a)
             /* already on the LF */
             break;
         }
         else {
           /* no trailer, we are on the final CRLF pair */
-          ch->state = CHUNK_TRAILER_POSTCR;
+    {  // Begin logged block
+    ch->state = CHUNK_TRAILER_POSTCR;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
           break; /* do not advance the pointer */
         }
       }
       else {
         result = Curl_dyn_addn(&ch->trailer, buf, 1);
         if(result) {
-          ch->state = CHUNK_FAILED;
-          ch->last_code = CHUNKE_OUT_OF_MEMORY;
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_OUT_OF_MEMORY;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
           return result;
         }
       }
@@ -309,14 +398,23 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
 
     case CHUNK_TRAILER_CR:
       if(*buf == 0x0a) {
-        ch->state = CHUNK_TRAILER_POSTCR;
+    {  // Begin logged block
+    ch->state = CHUNK_TRAILER_POSTCR;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
         buf++;
         blen--;
         (*pconsumed)++;
       }
       else {
-        ch->state = CHUNK_FAILED;
-        ch->last_code = CHUNKE_BAD_CHUNK;
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_BAD_CHUNK;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
         return CURLE_RECV_ERROR;
       }
       break;
@@ -326,7 +424,10 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
          have to first pass a CR before we wait for LF */
       if((*buf != 0x0d) && (*buf != 0x0a)) {
         /* not a CR then it must be another header in the trailer */
-        ch->state = CHUNK_TRAILER;
+    {  // Begin logged block
+    ch->state = CHUNK_TRAILER;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
         break;
       }
       if(*buf == 0x0d) {
@@ -336,7 +437,10 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
         (*pconsumed)++;
       }
       /* now wait for the final LF */
-      ch->state = CHUNK_STOP;
+    {  // Begin logged block
+    ch->state = CHUNK_STOP;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
       break;
 
     case CHUNK_STOP:
@@ -346,13 +450,22 @@ static CURLcode httpchunk_readwrite(struct Curl_easy *data,
         /* Record the length of any data left in the end of the buffer
            even if there is no more chunks to read */
         ch->datasize = blen;
-        ch->state = CHUNK_DONE;
+    {  // Begin logged block
+    ch->state = CHUNK_DONE;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
         CURL_TRC_WRITE(data, "http_chunk, response complete");
         return CURLE_OK;
       }
       else {
-        ch->state = CHUNK_FAILED;
-        ch->last_code = CHUNKE_BAD_CHUNK;
+    {  // Begin logged block
+    ch->state = CHUNK_FAILED;
+    LOG_VAR_INT(ch->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    ch->last_code = CHUNKE_BAD_CHUNK;
+    LOG_VAR_INT(ch->last_code); // Auto-logged
+    }  // End logged block
         CURL_TRC_WRITE(data, "http_chunk error, expected 0x0a, seeing 0x%ux",
                        (unsigned int)*buf);
         return CURLE_RECV_ERROR;

@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -138,7 +143,10 @@ bool Curl_check_noproxy(const char *name, const char *no_proxy)
   if(no_proxy && no_proxy[0]) {
     const char *p = no_proxy;
     size_t namelen;
+    {  // Begin logged block
     enum nametype type = TYPE_HOST;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
     if(!strcmp("*", no_proxy))
       return TRUE;
 
@@ -157,13 +165,19 @@ bool Curl_check_noproxy(const char *name, const char *no_proxy)
       memcpy(hostip, name, namelen);
       hostip[namelen] = 0;
       name = hostip;
-      type = TYPE_IPV6;
+    {  // Begin logged block
+    type = TYPE_IPV6;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
     }
     else {
       unsigned int address;
       namelen = strlen(name);
       if(1 == Curl_inet_pton(AF_INET, name, &address))
-        type = TYPE_IPV4;
+    {  // Begin logged block
+    type = TYPE_IPV4;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
       else {
         /* ignore trailing dots in the hostname */
         if(name[namelen - 1] == '.')

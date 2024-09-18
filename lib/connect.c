@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -947,7 +952,10 @@ static CURLcode cf_he_connect(struct Curl_cfilter *cf,
       result = start_connect(cf, data, ctx->remotehost);
       if(result)
         return result;
-      ctx->state = SCFST_WAITING;
+    {  // Begin logged block
+    ctx->state = SCFST_WAITING;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
       FALLTHROUGH();
     case SCFST_WAITING:
       result = is_connected(cf, data, done);
@@ -957,7 +965,10 @@ static CURLcode cf_he_connect(struct Curl_cfilter *cf,
         DEBUGASSERT(ctx->winner->cf->connected);
         /* we have a winner. Install and activate it.
          * close/free all others. */
-        ctx->state = SCFST_DONE;
+    {  // Begin logged block
+    ctx->state = SCFST_DONE;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
         cf->connected = TRUE;
         cf->next = ctx->winner->cf;
         ctx->winner->cf = NULL;
@@ -984,7 +995,10 @@ static void cf_he_close(struct Curl_cfilter *cf,
   CURL_TRC_CF(data, cf, "close");
   cf_he_ctx_clear(cf, data);
   cf->connected = FALSE;
-  ctx->state = SCFST_INIT;
+    {  // Begin logged block
+    ctx->state = SCFST_INIT;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
 
   if(cf->next) {
     cf->next->cft->do_close(cf->next, data);
@@ -1253,7 +1267,10 @@ connect_sub_chain:
     result = cf_he_insert_after(cf, data, ctx->remotehost, ctx->transport);
     if(result)
       return result;
+    {  // Begin logged block
     ctx->state = CF_SETUP_CNNCT_EYEBALLS;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     if(!cf->next || !cf->next->connected)
       goto connect_sub_chain;
   }
@@ -1264,7 +1281,10 @@ connect_sub_chain:
     result = Curl_cf_socks_proxy_insert_after(cf, data);
     if(result)
       return result;
+    {  // Begin logged block
     ctx->state = CF_SETUP_CNNCT_SOCKS;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     if(!cf->next || !cf->next->connected)
       goto connect_sub_chain;
   }
@@ -1286,7 +1306,10 @@ connect_sub_chain:
         return result;
     }
 #endif /* !CURL_DISABLE_HTTP */
+    {  // Begin logged block
     ctx->state = CF_SETUP_CNNCT_HTTP_PROXY;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     if(!cf->next || !cf->next->connected)
       goto connect_sub_chain;
   }
@@ -1305,7 +1328,10 @@ connect_sub_chain:
         return result;
     }
 #endif /* !CURL_DISABLE_PROXY */
+    {  // Begin logged block
     ctx->state = CF_SETUP_CNNCT_HAPROXY;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     if(!cf->next || !cf->next->connected)
       goto connect_sub_chain;
   }
@@ -1321,12 +1347,18 @@ connect_sub_chain:
         return result;
     }
 #endif /* USE_SSL */
+    {  // Begin logged block
     ctx->state = CF_SETUP_CNNCT_SSL;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     if(!cf->next || !cf->next->connected)
       goto connect_sub_chain;
   }
 
-  ctx->state = CF_SETUP_DONE;
+    {  // Begin logged block
+    ctx->state = CF_SETUP_DONE;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
   cf->connected = TRUE;
   *done = TRUE;
   return CURLE_OK;
@@ -1339,7 +1371,10 @@ static void cf_setup_close(struct Curl_cfilter *cf,
 
   CURL_TRC_CF(data, cf, "close");
   cf->connected = FALSE;
-  ctx->state = CF_SETUP_INIT;
+    {  // Begin logged block
+    ctx->state = CF_SETUP_INIT;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
 
   if(cf->next) {
     cf->next->cft->do_close(cf->next, data);
@@ -1392,7 +1427,10 @@ static CURLcode cf_setup_create(struct Curl_cfilter **pcf,
     result = CURLE_OUT_OF_MEMORY;
     goto out;
   }
-  ctx->state = CF_SETUP_INIT;
+    {  // Begin logged block
+    ctx->state = CF_SETUP_INIT;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
   ctx->remotehost = remotehost;
   ctx->ssl_mode = ssl_mode;
   ctx->transport = transport;

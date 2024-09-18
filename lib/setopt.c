@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -2771,52 +2776,91 @@ CURLcode Curl_vsetopt(struct Curl_easy *data, CURLoption option, va_list param)
      */
     long in_rtspreq = va_arg(param, long);
     Curl_RtspReq rtspreq = RTSPREQ_NONE;
+    {  // Begin logged block
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
     switch(in_rtspreq) {
     case CURL_RTSPREQ_OPTIONS:
-      rtspreq = RTSPREQ_OPTIONS;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_OPTIONS;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
 
     case CURL_RTSPREQ_DESCRIBE:
-      rtspreq = RTSPREQ_DESCRIBE;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_DESCRIBE;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
 
     case CURL_RTSPREQ_ANNOUNCE:
-      rtspreq = RTSPREQ_ANNOUNCE;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_ANNOUNCE;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
 
     case CURL_RTSPREQ_SETUP:
-      rtspreq = RTSPREQ_SETUP;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_SETUP;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
 
     case CURL_RTSPREQ_PLAY:
-      rtspreq = RTSPREQ_PLAY;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_PLAY;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
 
     case CURL_RTSPREQ_PAUSE:
-      rtspreq = RTSPREQ_PAUSE;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_PAUSE;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
 
     case CURL_RTSPREQ_TEARDOWN:
-      rtspreq = RTSPREQ_TEARDOWN;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_TEARDOWN;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
 
     case CURL_RTSPREQ_GET_PARAMETER:
-      rtspreq = RTSPREQ_GET_PARAMETER;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_GET_PARAMETER;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
 
     case CURL_RTSPREQ_SET_PARAMETER:
-      rtspreq = RTSPREQ_SET_PARAMETER;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_SET_PARAMETER;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
 
     case CURL_RTSPREQ_RECORD:
-      rtspreq = RTSPREQ_RECORD;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_RECORD;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
 
     case CURL_RTSPREQ_RECEIVE:
-      rtspreq = RTSPREQ_RECEIVE;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_RECEIVE;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
       break;
     default:
-      rtspreq = RTSPREQ_NONE;
+    {  // Begin logged block
+    rtspreq = RTSPREQ_NONE;
+    LOG_VAR_INT(rtspreq); // Auto-logged
+    }  // End logged block
     }
 
     data->set.rtspreq = rtspreq;

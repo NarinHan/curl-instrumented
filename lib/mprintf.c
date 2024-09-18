@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -428,65 +433,119 @@ static int parsefmt(const char *format,
         flags |= FLAGS_ALT;
         FALLTHROUGH();
       case 's':
-        type = FORMAT_STRING;
+    {  // Begin logged block
+    type = FORMAT_STRING;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         break;
       case 'n':
-        type = FORMAT_INTPTR;
+    {  // Begin logged block
+    type = FORMAT_INTPTR;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         break;
       case 'p':
-        type = FORMAT_PTR;
+    {  // Begin logged block
+    type = FORMAT_PTR;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         break;
       case 'd':
       case 'i':
         if(flags & FLAGS_LONGLONG)
-          type = FORMAT_LONGLONG;
+    {  // Begin logged block
+    type = FORMAT_LONGLONG;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         else if(flags & FLAGS_LONG)
-          type = FORMAT_LONG;
+    {  // Begin logged block
+    type = FORMAT_LONG;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         else
-          type = FORMAT_INT;
+    {  // Begin logged block
+    type = FORMAT_INT;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         break;
       case 'u':
         if(flags & FLAGS_LONGLONG)
-          type = FORMAT_LONGLONGU;
+    {  // Begin logged block
+    type = FORMAT_LONGLONGU;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         else if(flags & FLAGS_LONG)
-          type = FORMAT_LONGU;
+    {  // Begin logged block
+    type = FORMAT_LONGU;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         else
-          type = FORMAT_INTU;
+    {  // Begin logged block
+    type = FORMAT_INTU;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         flags |= FLAGS_UNSIGNED;
         break;
       case 'o':
-        type = FORMAT_INT;
+    {  // Begin logged block
+    type = FORMAT_INT;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         flags |= FLAGS_OCTAL;
         break;
       case 'x':
-        type = FORMAT_INTU;
+    {  // Begin logged block
+    type = FORMAT_INTU;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         flags |= FLAGS_HEX|FLAGS_UNSIGNED;
         break;
       case 'X':
-        type = FORMAT_INTU;
+    {  // Begin logged block
+    type = FORMAT_INTU;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         flags |= FLAGS_HEX|FLAGS_UPPER|FLAGS_UNSIGNED;
         break;
       case 'c':
-        type = FORMAT_INT;
+    {  // Begin logged block
+    type = FORMAT_INT;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         flags |= FLAGS_CHAR;
         break;
       case 'f':
-        type = FORMAT_DOUBLE;
+    {  // Begin logged block
+    type = FORMAT_DOUBLE;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         break;
       case 'e':
-        type = FORMAT_DOUBLE;
+    {  // Begin logged block
+    type = FORMAT_DOUBLE;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         flags |= FLAGS_FLOATE;
         break;
       case 'E':
-        type = FORMAT_DOUBLE;
+    {  // Begin logged block
+    type = FORMAT_DOUBLE;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         flags |= FLAGS_FLOATE|FLAGS_UPPER;
         break;
       case 'g':
-        type = FORMAT_DOUBLE;
+    {  // Begin logged block
+    type = FORMAT_DOUBLE;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         flags |= FLAGS_FLOATG;
         break;
       case 'G':
-        type = FORMAT_DOUBLE;
+    {  // Begin logged block
+    type = FORMAT_DOUBLE;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         flags |= FLAGS_FLOATG|FLAGS_UPPER;
         break;
       default:
@@ -508,7 +567,10 @@ static int parsefmt(const char *format,
         if(width >= max_param)
           max_param = width;
 
-        in[width].type = FORMAT_WIDTH;
+    {  // Begin logged block
+    in[width].type = FORMAT_WIDTH;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         /* mark as used */
         usedinput[width/8] |= (unsigned char)(1 << (width&7));
       }
@@ -527,7 +589,10 @@ static int parsefmt(const char *format,
         if(precision >= max_param)
           max_param = precision;
 
-        in[precision].type = FORMAT_PRECISION;
+    {  // Begin logged block
+    in[precision].type = FORMAT_PRECISION;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
         usedinput[precision/8] |= (unsigned char)(1 << (precision&7));
       }
 

@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -747,7 +752,10 @@ CURLcode Curl_follow(struct Curl_easy *data,
     if((data->set.maxredirs != -1) &&
        (data->state.followlocation >= data->set.maxredirs)) {
       reachedmax = TRUE;
-      type = FOLLOW_FAKE; /* switch to fake to store the would-be-redirected
+    {  // Begin logged block
+    type = FOLLOW_FAKE; /* switch to fake to store the would-be-redirected
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
                              to URL */
     }
     else {
@@ -939,7 +947,10 @@ CURLcode Curl_follow(struct Curl_easy *data,
         || data->state.httpreq == HTTPREQ_POST_MIME)
        && !(data->set.keep_post & CURL_REDIR_POST_301)) {
       infof(data, "Switch from POST to GET");
-      data->state.httpreq = HTTPREQ_GET;
+    {  // Begin logged block
+    data->state.httpreq = HTTPREQ_GET;
+    LOG_VAR_INT(data->state.httpreq); // Auto-logged
+    }  // End logged block
       Curl_creader_set_rewind(data, FALSE);
     }
     break;
@@ -965,7 +976,10 @@ CURLcode Curl_follow(struct Curl_easy *data,
         || data->state.httpreq == HTTPREQ_POST_MIME)
        && !(data->set.keep_post & CURL_REDIR_POST_302)) {
       infof(data, "Switch from POST to GET");
-      data->state.httpreq = HTTPREQ_GET;
+    {  // Begin logged block
+    data->state.httpreq = HTTPREQ_GET;
+    LOG_VAR_INT(data->state.httpreq); // Auto-logged
+    }  // End logged block
       Curl_creader_set_rewind(data, FALSE);
     }
     break;
@@ -981,7 +995,10 @@ CURLcode Curl_follow(struct Curl_easy *data,
          data->state.httpreq != HTTPREQ_POST_FORM &&
          data->state.httpreq != HTTPREQ_POST_MIME) ||
         !(data->set.keep_post & CURL_REDIR_POST_303))) {
-      data->state.httpreq = HTTPREQ_GET;
+    {  // Begin logged block
+    data->state.httpreq = HTTPREQ_GET;
+    LOG_VAR_INT(data->state.httpreq); // Auto-logged
+    }  // End logged block
       infof(data, "Switch to %s",
             data->req.no_body?"HEAD":"GET");
     }

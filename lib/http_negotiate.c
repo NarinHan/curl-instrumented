@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -217,17 +222,26 @@ CURLcode Curl_output_negotiate(struct Curl_easy *data,
       return CURLE_OUT_OF_MEMORY;
     }
 
+    {  // Begin logged block
     *state = GSS_AUTHSENT;
+    LOG_VAR_INT(*state); // Auto-logged
+    }  // End logged block
   #ifdef HAVE_GSSAPI
     if(neg_ctx->status == GSS_S_COMPLETE ||
        neg_ctx->status == GSS_S_CONTINUE_NEEDED) {
-      *state = GSS_AUTHDONE;
+    {  // Begin logged block
+    *state = GSS_AUTHDONE;
+    LOG_VAR_INT(*state); // Auto-logged
+    }  // End logged block
     }
   #else
   #ifdef USE_WINDOWS_SSPI
     if(neg_ctx->status == SEC_E_OK ||
        neg_ctx->status == SEC_I_CONTINUE_NEEDED) {
-      *state = GSS_AUTHDONE;
+    {  // Begin logged block
+    *state = GSS_AUTHDONE;
+    LOG_VAR_INT(*state); // Auto-logged
+    }  // End logged block
     }
   #endif
   #endif
@@ -246,8 +260,14 @@ CURLcode Curl_output_negotiate(struct Curl_easy *data,
 
 void Curl_http_auth_cleanup_negotiate(struct connectdata *conn)
 {
-  conn->http_negotiate_state = GSS_AUTHNONE;
-  conn->proxy_negotiate_state = GSS_AUTHNONE;
+    {  // Begin logged block
+    conn->http_negotiate_state = GSS_AUTHNONE;
+    LOG_VAR_INT(conn->http_negotiate_state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    conn->proxy_negotiate_state = GSS_AUTHNONE;
+    LOG_VAR_INT(conn->proxy_negotiate_state); // Auto-logged
+    }  // End logged block
 
   Curl_auth_cleanup_spnego(&conn->negotiate);
   Curl_auth_cleanup_spnego(&conn->proxyneg);

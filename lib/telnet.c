@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -209,7 +214,10 @@ CURLcode init_telnet(struct Curl_easy *data)
   Curl_dyn_init(&tn->out, 0xffff);
   data->req.p.telnet = tn; /* make us known */
 
-  tn->telrcv_state = CURL_TS_DATA;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DATA;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
 
   /* Init suboptions */
   CURL_SB_CLEAR(tn);
@@ -1099,7 +1107,10 @@ CURLcode telrcv(struct Curl_easy *data,
 
     switch(tn->telrcv_state) {
     case CURL_TS_CR:
-      tn->telrcv_state = CURL_TS_DATA;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DATA;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
       if(c == '\0') {
         startskipping();
         break;   /* Ignore \0 after CR */
@@ -1109,12 +1120,18 @@ CURLcode telrcv(struct Curl_easy *data,
 
     case CURL_TS_DATA:
       if(c == CURL_IAC) {
-        tn->telrcv_state = CURL_TS_IAC;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_IAC;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         startskipping();
         break;
       }
       else if(c == '\r')
-        tn->telrcv_state = CURL_TS_CR;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_CR;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
       writebyte();
       break;
 
@@ -1123,30 +1140,51 @@ process_iac:
       DEBUGASSERT(startwrite < 0);
       switch(c) {
       case CURL_WILL:
-        tn->telrcv_state = CURL_TS_WILL;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_WILL;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         break;
       case CURL_WONT:
-        tn->telrcv_state = CURL_TS_WONT;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_WONT;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         break;
       case CURL_DO:
-        tn->telrcv_state = CURL_TS_DO;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DO;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         break;
       case CURL_DONT:
-        tn->telrcv_state = CURL_TS_DONT;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DONT;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         break;
       case CURL_SB:
         CURL_SB_CLEAR(tn);
-        tn->telrcv_state = CURL_TS_SB;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_SB;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         break;
       case CURL_IAC:
-        tn->telrcv_state = CURL_TS_DATA;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DATA;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         writebyte();
         break;
       case CURL_DM:
       case CURL_NOP:
       case CURL_GA:
       default:
-        tn->telrcv_state = CURL_TS_DATA;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DATA;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         printoption(data, "RCVD", CURL_IAC, c);
         break;
       }
@@ -1156,33 +1194,48 @@ process_iac:
         printoption(data, "RCVD", CURL_WILL, c);
         tn->please_negotiate = 1;
         rec_will(data, c);
-        tn->telrcv_state = CURL_TS_DATA;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DATA;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         break;
 
       case CURL_TS_WONT:
         printoption(data, "RCVD", CURL_WONT, c);
         tn->please_negotiate = 1;
         rec_wont(data, c);
-        tn->telrcv_state = CURL_TS_DATA;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DATA;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         break;
 
       case CURL_TS_DO:
         printoption(data, "RCVD", CURL_DO, c);
         tn->please_negotiate = 1;
         rec_do(data, c);
-        tn->telrcv_state = CURL_TS_DATA;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DATA;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         break;
 
       case CURL_TS_DONT:
         printoption(data, "RCVD", CURL_DONT, c);
         tn->please_negotiate = 1;
         rec_dont(data, c);
-        tn->telrcv_state = CURL_TS_DATA;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DATA;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         break;
 
       case CURL_TS_SB:
         if(c == CURL_IAC)
-          tn->telrcv_state = CURL_TS_SE;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_SE;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         else
           CURL_SB_ACCUM(tn, c);
         break;
@@ -1206,11 +1259,17 @@ process_iac:
 
             printoption(data, "In SUBOPTION processing, RCVD", CURL_IAC, c);
             suboption(data);   /* handle sub-option */
-            tn->telrcv_state = CURL_TS_IAC;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_IAC;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
             goto process_iac;
           }
           CURL_SB_ACCUM(tn, c);
-          tn->telrcv_state = CURL_TS_SB;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_SB;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         }
         else {
           CURL_SB_ACCUM(tn, CURL_IAC);
@@ -1218,7 +1277,10 @@ process_iac:
           tn->subpointer -= 2;
           CURL_SB_TERM(tn);
           suboption(data);   /* handle sub-option */
-          tn->telrcv_state = CURL_TS_DATA;
+    {  // Begin logged block
+    tn->telrcv_state = CURL_TS_DATA;
+    LOG_VAR_INT(tn->telrcv_state); // Auto-logged
+    }  // End logged block
         }
         break;
     }

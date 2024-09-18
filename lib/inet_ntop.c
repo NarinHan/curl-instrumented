@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /*
  * Copyright (C) 1996-2022  Internet Software Consortium.
  *

@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -187,7 +192,10 @@ static void fileinfo_dtor(void *user, void *element)
 CURLcode Curl_wildcard_init(struct WildcardData *wc)
 {
   Curl_llist_init(&wc->filelist, fileinfo_dtor);
-  wc->state = CURLWC_INIT;
+    {  // Begin logged block
+    wc->state = CURLWC_INIT;
+    LOG_VAR_INT(wc->state); // Auto-logged
+    }  // End logged block
 
   return CURLE_OK;
 }
@@ -210,7 +218,10 @@ void Curl_wildcard_dtor(struct WildcardData **wcp)
   wc->path = NULL;
   free(wc->pattern);
   wc->pattern = NULL;
-  wc->state = CURLWC_INIT;
+    {  // Begin logged block
+    wc->state = CURLWC_INIT;
+    LOG_VAR_INT(wc->state); // Auto-logged
+    }  // End logged block
   free(wc);
   *wcp = NULL;
 }
@@ -421,11 +432,17 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
         switch(parser->state.UNIX.sub.total_dirsize) {
         case PL_UNIX_TOTALSIZE_INIT:
           if(c == 't') {
-            parser->state.UNIX.sub.total_dirsize = PL_UNIX_TOTALSIZE_READING;
+    {  // Begin logged block
+    parser->state.UNIX.sub.total_dirsize = PL_UNIX_TOTALSIZE_READING;
+    LOG_VAR_INT(parser->state.UNIX.sub.total_dirsize); // Auto-logged
+    }  // End logged block
             parser->item_length++;
           }
           else {
-            parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
             /* start FSM again not considering size of directory */
             Curl_dyn_reset(&infop->buf);
             continue;
@@ -451,7 +468,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
                 parser->error = CURLE_FTP_BAD_FILE_LIST;
                 goto fail;
               }
-              parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
               Curl_dyn_reset(&infop->buf);
             }
             else {
@@ -492,7 +512,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
           parser->error = CURLE_FTP_BAD_FILE_LIST;
           goto fail;
         }
-        parser->state.UNIX.main = PL_UNIX_PERMISSION;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_PERMISSION;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
         parser->item_length = 0;
         parser->item_offset = 1;
         break;
@@ -521,8 +544,14 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
           parser->offsets.perm = parser->item_offset;
 
           parser->item_length = 0;
-          parser->state.UNIX.main = PL_UNIX_HLINKS;
-          parser->state.UNIX.sub.hlinks = PL_UNIX_HLINKS_PRESPACE;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_HLINKS;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    parser->state.UNIX.sub.hlinks = PL_UNIX_HLINKS_PRESPACE;
+    LOG_VAR_INT(parser->state.UNIX.sub.hlinks); // Auto-logged
+    }  // End logged block
         }
         break;
       case PL_UNIX_HLINKS:
@@ -532,7 +561,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
             if(ISDIGIT(c)) {
               parser->item_offset = len - 1;
               parser->item_length = 1;
-              parser->state.UNIX.sub.hlinks = PL_UNIX_HLINKS_NUMBER;
+    {  // Begin logged block
+    parser->state.UNIX.sub.hlinks = PL_UNIX_HLINKS_NUMBER;
+    LOG_VAR_INT(parser->state.UNIX.sub.hlinks); // Auto-logged
+    }  // End logged block
             }
             else {
               parser->error = CURLE_FTP_BAD_FILE_LIST;
@@ -553,7 +585,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
             }
             parser->item_length = 0;
             parser->item_offset = 0;
-            parser->state.UNIX.main = PL_UNIX_USER;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_USER;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
             parser->state.UNIX.sub.user = PL_UNIX_USER_PRESPACE;
           }
           else if(!ISDIGIT(c)) {
@@ -577,8 +612,14 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
           if(c == ' ') {
             mem[parser->item_offset + parser->item_length - 1] = 0;
             parser->offsets.user = parser->item_offset;
-            parser->state.UNIX.main = PL_UNIX_GROUP;
-            parser->state.UNIX.sub.group = PL_UNIX_GROUP_PRESPACE;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_GROUP;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    parser->state.UNIX.sub.group = PL_UNIX_GROUP_PRESPACE;
+    LOG_VAR_INT(parser->state.UNIX.sub.group); // Auto-logged
+    }  // End logged block
             parser->item_offset = 0;
             parser->item_length = 0;
           }
@@ -591,7 +632,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
           if(c != ' ') {
             parser->item_offset = len - 1;
             parser->item_length = 1;
-            parser->state.UNIX.sub.group = PL_UNIX_GROUP_NAME;
+    {  // Begin logged block
+    parser->state.UNIX.sub.group = PL_UNIX_GROUP_NAME;
+    LOG_VAR_INT(parser->state.UNIX.sub.group); // Auto-logged
+    }  // End logged block
           }
           break;
         case PL_UNIX_GROUP_NAME:
@@ -599,7 +643,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
           if(c == ' ') {
             mem[parser->item_offset + parser->item_length - 1] = 0;
             parser->offsets.group = parser->item_offset;
-            parser->state.UNIX.main = PL_UNIX_SIZE;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_SIZE;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
             parser->state.UNIX.sub.size = PL_UNIX_SIZE_PRESPACE;
             parser->item_offset = 0;
             parser->item_length = 0;
@@ -637,7 +684,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
               }
               parser->item_length = 0;
               parser->item_offset = 0;
-              parser->state.UNIX.main = PL_UNIX_TIME;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_TIME;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
               parser->state.UNIX.sub.time = PL_UNIX_TIME_PREPART1;
             }
           }
@@ -718,11 +768,20 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
               }
             */
             if(finfo->filetype == CURLFILETYPE_SYMLINK) {
-              parser->state.UNIX.main = PL_UNIX_SYMLINK;
-              parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_PRESPACE;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_SYMLINK;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_PRESPACE;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
             }
             else {
-              parser->state.UNIX.main = PL_UNIX_FILENAME;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_FILENAME;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
               parser->state.UNIX.sub.filename = PL_UNIX_FILENAME_PRESPACE;
             }
           }
@@ -750,7 +809,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
           else if(c == '\n') {
             mem[parser->item_offset + parser->item_length - 1] = 0;
             parser->offsets.filename = parser->item_offset;
-            parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
             result = ftp_pl_insert_finfo(data, infop);
             if(result) {
               parser->error = result;
@@ -762,7 +824,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
           if(c == '\n') {
             mem[parser->item_offset + parser->item_length - 1] = 0;
             parser->offsets.filename = parser->item_offset;
-            parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
             result = ftp_pl_insert_finfo(data, infop);
             if(result) {
               parser->error = result;
@@ -782,13 +847,19 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
           if(c != ' ') {
             parser->item_offset = len - 1;
             parser->item_length = 1;
-            parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_NAME;
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_NAME;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
           }
           break;
         case PL_UNIX_SYMLINK_NAME:
           parser->item_length++;
           if(c == ' ') {
-            parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_PRETARGET1;
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_PRETARGET1;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
           }
           else if(c == '\r' || c == '\n') {
             parser->error = CURLE_FTP_BAD_FILE_LIST;
@@ -798,33 +869,48 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
         case PL_UNIX_SYMLINK_PRETARGET1:
           parser->item_length++;
           if(c == '-') {
-            parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_PRETARGET2;
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_PRETARGET2;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
           }
           else if(c == '\r' || c == '\n') {
             parser->error = CURLE_FTP_BAD_FILE_LIST;
             goto fail;
           }
           else {
-            parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_NAME;
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_NAME;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
           }
           break;
         case PL_UNIX_SYMLINK_PRETARGET2:
           parser->item_length++;
           if(c == '>') {
-            parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_PRETARGET3;
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_PRETARGET3;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
           }
           else if(c == '\r' || c == '\n') {
             parser->error = CURLE_FTP_BAD_FILE_LIST;
             goto fail;
           }
           else {
-            parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_NAME;
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_NAME;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
           }
           break;
         case PL_UNIX_SYMLINK_PRETARGET3:
           parser->item_length++;
           if(c == ' ') {
-            parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_PRETARGET4;
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_PRETARGET4;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
             /* now place where is symlink following */
             mem[parser->item_offset + parser->item_length - 4] = 0;
             parser->offsets.filename = parser->item_offset;
@@ -836,12 +922,18 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
             goto fail;
           }
           else {
-            parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_NAME;
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_NAME;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
           }
           break;
         case PL_UNIX_SYMLINK_PRETARGET4:
           if(c != '\r' && c != '\n') {
-            parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_TARGET;
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_TARGET;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
             parser->item_offset = len - 1;
             parser->item_length = 1;
           }
@@ -853,7 +945,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
         case PL_UNIX_SYMLINK_TARGET:
           parser->item_length++;
           if(c == '\r') {
-            parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_WINDOWSEOL;
+    {  // Begin logged block
+    parser->state.UNIX.sub.symlink = PL_UNIX_SYMLINK_WINDOWSEOL;
+    LOG_VAR_INT(parser->state.UNIX.sub.symlink); // Auto-logged
+    }  // End logged block
           }
           else if(c == '\n') {
             mem[parser->item_offset + parser->item_length - 1] = 0;
@@ -863,7 +958,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
               parser->error = result;
               goto fail;
             }
-            parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
           }
           break;
         case PL_UNIX_SYMLINK_WINDOWSEOL:
@@ -875,7 +973,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
               parser->error = result;
               goto fail;
             }
-            parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    {  // Begin logged block
+    parser->state.UNIX.main = PL_UNIX_FILETYPE;
+    LOG_VAR_INT(parser->state.UNIX.main); // Auto-logged
+    }  // End logged block
           }
           else {
             parser->error = CURLE_FTP_BAD_FILE_LIST;
@@ -898,7 +999,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
         }
         else if(parser->item_length == 9) {
           if(c == ' ') {
-            parser->state.NT.main = PL_WINNT_TIME;
+    {  // Begin logged block
+    parser->state.NT.main = PL_WINNT_TIME;
+    LOG_VAR_INT(parser->state.NT.main); // Auto-logged
+    }  // End logged block
             parser->state.NT.sub.time = PL_WINNT_TIME_PRESPACE;
           }
           else {
@@ -923,8 +1027,14 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
           if(c == ' ') {
             parser->offsets.time = parser->item_offset;
             mem[parser->item_offset + parser->item_length -1] = 0;
-            parser->state.NT.main = PL_WINNT_DIRORSIZE;
-            parser->state.NT.sub.dirorsize = PL_WINNT_DIRORSIZE_PRESPACE;
+    {  // Begin logged block
+    parser->state.NT.main = PL_WINNT_DIRORSIZE;
+    LOG_VAR_INT(parser->state.NT.main); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    parser->state.NT.sub.dirorsize = PL_WINNT_DIRORSIZE_PRESPACE;
+    LOG_VAR_INT(parser->state.NT.sub.dirorsize); // Auto-logged
+    }  // End logged block
             parser->item_length = 0;
           }
           else if(!strchr("APM0123456789:", c)) {
@@ -940,7 +1050,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
           if(c != ' ') {
             parser->item_offset = len - 1;
             parser->item_length = 1;
-            parser->state.NT.sub.dirorsize = PL_WINNT_DIRORSIZE_CONTENT;
+    {  // Begin logged block
+    parser->state.NT.sub.dirorsize = PL_WINNT_DIRORSIZE_CONTENT;
+    LOG_VAR_INT(parser->state.NT.sub.dirorsize); // Auto-logged
+    }  // End logged block
           }
           break;
         case PL_WINNT_DIRORSIZE_CONTENT:
@@ -965,7 +1078,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
 
             parser->file_data->info.flags |= CURLFINFOFLAG_KNOWN_SIZE;
             parser->item_length = 0;
-            parser->state.NT.main = PL_WINNT_FILENAME;
+    {  // Begin logged block
+    parser->state.NT.main = PL_WINNT_FILENAME;
+    LOG_VAR_INT(parser->state.NT.main); // Auto-logged
+    }  // End logged block
             parser->state.NT.sub.filename = PL_WINNT_FILENAME_PRESPACE;
           }
           break;
@@ -994,7 +1110,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
               parser->error = result;
               goto fail;
             }
-            parser->state.NT.main = PL_WINNT_DATE;
+    {  // Begin logged block
+    parser->state.NT.main = PL_WINNT_DATE;
+    LOG_VAR_INT(parser->state.NT.main); // Auto-logged
+    }  // End logged block
             parser->state.NT.sub.filename = PL_WINNT_FILENAME_PRESPACE;
           }
           break;
@@ -1006,7 +1125,10 @@ size_t Curl_ftp_parselist(char *buffer, size_t size, size_t nmemb,
               parser->error = result;
               goto fail;
             }
-            parser->state.NT.main = PL_WINNT_DATE;
+    {  // Begin logged block
+    parser->state.NT.main = PL_WINNT_DATE;
+    LOG_VAR_INT(parser->state.NT.main); // Auto-logged
+    }  // End logged block
             parser->state.NT.sub.filename = PL_WINNT_FILENAME_PRESPACE;
           }
           else {

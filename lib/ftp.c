@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -3909,7 +3914,10 @@ static CURLcode init_wc_data(struct Curl_easy *data)
   if(last_slash) {
     last_slash++;
     if(last_slash[0] == '\0') {
-      wildcard->state = CURLWC_CLEAN;
+    {  // Begin logged block
+    wildcard->state = CURLWC_CLEAN;
+    LOG_VAR_INT(wildcard->state); // Auto-logged
+    }  // End logged block
       result = ftp_parse_url_path(data);
       return result;
     }
@@ -3926,7 +3934,10 @@ static CURLcode init_wc_data(struct Curl_easy *data)
       path[0] = '\0';
     }
     else { /* only list */
-      wildcard->state = CURLWC_CLEAN;
+    {  // Begin logged block
+    wildcard->state = CURLWC_CLEAN;
+    LOG_VAR_INT(wildcard->state); // Auto-logged
+    }  // End logged block
       result = ftp_parse_url_path(data);
       return result;
     }
@@ -4015,16 +4026,25 @@ static CURLcode wc_statemach(struct Curl_easy *data)
       data->set.out = ftpwc->backup.file_descriptor;
       ftpwc->backup.write_function = ZERO_NULL;
       ftpwc->backup.file_descriptor = NULL;
-      wildcard->state = CURLWC_DOWNLOADING;
+    {  // Begin logged block
+    wildcard->state = CURLWC_DOWNLOADING;
+    LOG_VAR_INT(wildcard->state); // Auto-logged
+    }  // End logged block
 
       if(Curl_ftp_parselist_geterror(ftpwc->parser)) {
         /* error found in LIST parsing */
-        wildcard->state = CURLWC_CLEAN;
+    {  // Begin logged block
+    wildcard->state = CURLWC_CLEAN;
+    LOG_VAR_INT(wildcard->state); // Auto-logged
+    }  // End logged block
         continue;
       }
       if(Curl_llist_count(&wildcard->filelist) == 0) {
         /* no corresponding file */
-        wildcard->state = CURLWC_CLEAN;
+    {  // Begin logged block
+    wildcard->state = CURLWC_CLEAN;
+    LOG_VAR_INT(wildcard->state); // Auto-logged
+    }  // End logged block
         return CURLE_REMOTE_FILE_NOT_FOUND;
       }
       continue;
@@ -4057,7 +4077,10 @@ static CURLcode wc_statemach(struct Curl_easy *data)
         case CURL_CHUNK_BGN_FUNC_SKIP:
           infof(data, "Wildcard - \"%s\" skipped by user",
                 finfo->filename);
-          wildcard->state = CURLWC_SKIP;
+    {  // Begin logged block
+    wildcard->state = CURLWC_SKIP;
+    LOG_VAR_INT(wildcard->state); // Auto-logged
+    }  // End logged block
           continue;
         case CURL_CHUNK_BGN_FUNC_FAIL:
           return CURLE_CHUNK_FAILED;
@@ -4065,7 +4088,10 @@ static CURLcode wc_statemach(struct Curl_easy *data)
       }
 
       if(finfo->filetype != CURLFILETYPE_FILE) {
-        wildcard->state = CURLWC_SKIP;
+    {  // Begin logged block
+    wildcard->state = CURLWC_SKIP;
+    LOG_VAR_INT(wildcard->state); // Auto-logged
+    }  // End logged block
         continue;
       }
 
@@ -4081,7 +4107,10 @@ static CURLcode wc_statemach(struct Curl_easy *data)
 
       if(Curl_llist_count(&wildcard->filelist) == 0) {
         /* remains only one file to down. */
-        wildcard->state = CURLWC_CLEAN;
+    {  // Begin logged block
+    wildcard->state = CURLWC_CLEAN;
+    LOG_VAR_INT(wildcard->state); // Auto-logged
+    }  // End logged block
         /* after that will be ftp_do called once again and no transfer
            will be done because of CURLWC_CLEAN state */
         return CURLE_OK;
@@ -4549,7 +4578,10 @@ static CURLcode ftp_setup_connection(struct Curl_easy *data,
 
   if(type) {
     char command;
+    {  // Begin logged block
     *type = 0;                     /* it was in the middle of the hostname */
+    LOG_VAR_INT(*type); // Auto-logged
+    }  // End logged block
     command = Curl_raw_toupper(type[6]);
 
     switch(command) {

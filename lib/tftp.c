@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -400,7 +405,10 @@ static CURLcode tftp_connect_for_tx(struct tftp_state_data *state,
 
   infof(data, "%s", "Connected for transmit");
 #endif
-  state->state = TFTP_STATE_TX;
+    {  // Begin logged block
+    state->state = TFTP_STATE_TX;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
   result = tftp_set_timeouts(state);
   if(result)
     return result;
@@ -416,7 +424,10 @@ static CURLcode tftp_connect_for_rx(struct tftp_state_data *state,
 
   infof(data, "%s", "Connected for receive");
 #endif
-  state->state = TFTP_STATE_RX;
+    {  // Begin logged block
+    state->state = TFTP_STATE_RX;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
   result = tftp_set_timeouts(state);
   if(result)
     return result;
@@ -445,7 +456,10 @@ static CURLcode tftp_send_first(struct tftp_state_data *state,
     state->retries++;
     if(state->retries>state->retry_max) {
       state->error = TFTP_ERR_NORESPONSE;
-      state->state = TFTP_STATE_FIN;
+    {  // Begin logged block
+    state->state = TFTP_STATE_FIN;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
       return result;
     }
 
@@ -553,7 +567,10 @@ static CURLcode tftp_send_first(struct tftp_state_data *state,
     break;
 
   case TFTP_EVENT_ERROR:
+    {  // Begin logged block
     state->state = TFTP_STATE_FIN;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
     break;
 
   default:
@@ -620,10 +637,16 @@ static CURLcode tftp_rx(struct tftp_state_data *state,
 
     /* Check if completed (That is, a less than full packet is received) */
     if(state->rbytes < (ssize_t)state->blksize + 4) {
-      state->state = TFTP_STATE_FIN;
+    {  // Begin logged block
+    state->state = TFTP_STATE_FIN;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
     }
     else {
-      state->state = TFTP_STATE_RX;
+    {  // Begin logged block
+    state->state = TFTP_STATE_RX;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
     }
     state->rx_time = time(NULL);
     break;
@@ -644,7 +667,10 @@ static CURLcode tftp_rx(struct tftp_state_data *state,
     }
 
     /* we are ready to RX data */
+    {  // Begin logged block
     state->state = TFTP_STATE_RX;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
     state->rx_time = time(NULL);
     break;
 
@@ -656,7 +682,10 @@ static CURLcode tftp_rx(struct tftp_state_data *state,
           NEXT_BLOCKNUM(state->block), state->retries);
     if(state->retries > state->retry_max) {
       state->error = TFTP_ERR_TIMEOUT;
-      state->state = TFTP_STATE_FIN;
+    {  // Begin logged block
+    state->state = TFTP_STATE_FIN;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
     }
     else {
       /* Resend the previous ACK */
@@ -680,7 +709,10 @@ static CURLcode tftp_rx(struct tftp_state_data *state,
                  state->remote_addrlen);
     /* do not bother with the return code, but if the socket is still up we
      * should be a good TFTP client and let the server know we are done */
+    {  // Begin logged block
     state->state = TFTP_STATE_FIN;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
     break;
 
   default:
@@ -762,7 +794,10 @@ static CURLcode tftp_tx(struct tftp_state_data *state, tftp_event_t event)
     setpacketevent(&state->spacket, TFTP_EVENT_DATA);
     setpacketblock(&state->spacket, state->block);
     if(state->block > 1 && state->sbytes < state->blksize) {
-      state->state = TFTP_STATE_FIN;
+    {  // Begin logged block
+    state->state = TFTP_STATE_FIN;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
       return CURLE_OK;
     }
 
@@ -803,7 +838,10 @@ static CURLcode tftp_tx(struct tftp_state_data *state, tftp_event_t event)
     /* Decide if we have had enough */
     if(state->retries > state->retry_max) {
       state->error = TFTP_ERR_TIMEOUT;
-      state->state = TFTP_STATE_FIN;
+    {  // Begin logged block
+    state->state = TFTP_STATE_FIN;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
     }
     else {
       /* Re-send the data packet */
@@ -822,7 +860,10 @@ static CURLcode tftp_tx(struct tftp_state_data *state, tftp_event_t event)
     break;
 
   case TFTP_EVENT_ERROR:
+    {  // Begin logged block
     state->state = TFTP_STATE_FIN;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
     setpacketevent(&state->spacket, TFTP_EVENT_ERROR);
     setpacketblock(&state->spacket, state->block);
     (void)sendto(state->sockfd, (void *)state->spacket.data, 4, SEND_4TH_ARG,
@@ -830,7 +871,10 @@ static CURLcode tftp_tx(struct tftp_state_data *state, tftp_event_t event)
                  state->remote_addrlen);
     /* do not bother with the return code, but if the socket is still up we
      * should be a good TFTP client and let the server know we are done */
+    {  // Begin logged block
     state->state = TFTP_STATE_FIN;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
     break;
 
   default:
@@ -1006,7 +1050,10 @@ static CURLcode tftp_connect(struct Curl_easy *data, bool *done)
 
   state->data = data;
   state->sockfd = conn->sock[FIRSTSOCKET];
-  state->state = TFTP_STATE_START;
+    {  // Begin logged block
+    state->state = TFTP_STATE_START;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
   state->error = TFTP_ERR_NONE;
   state->blksize = TFTP_BLKSIZE_DEFAULT; /* Unless updated by OACK response */
   state->requested_blksize = blksize;
@@ -1122,7 +1169,10 @@ static CURLcode tftp_receive_packet(struct Curl_easy *data)
   if(state->rbytes < 4) {
     failf(data, "Received too short packet");
     /* Not a timeout, but how best to handle it? */
+    {  // Begin logged block
     state->event = TFTP_EVENT_TIMEOUT;
+    LOG_VAR_INT(state->event); // Auto-logged
+    }  // End logged block
   }
   else {
     /* The event is given by the TFTP packet time */
@@ -1194,19 +1244,28 @@ static timediff_t tftp_state_timeout(struct Curl_easy *data,
   timediff_t timeout_ms;
 
   if(event)
+    {  // Begin logged block
     *event = TFTP_EVENT_NONE;
+    LOG_VAR_INT(*event); // Auto-logged
+    }  // End logged block
 
   timeout_ms = Curl_timeleft(state->data, NULL,
                              (state->state == TFTP_STATE_START));
   if(timeout_ms < 0) {
     state->error = TFTP_ERR_TIMEOUT;
+    {  // Begin logged block
     state->state = TFTP_STATE_FIN;
+    LOG_VAR_INT(state->state); // Auto-logged
+    }  // End logged block
     return 0;
   }
   current = time(NULL);
   if(current > state->rx_time + state->retry_time) {
     if(event)
-      *event = TFTP_EVENT_TIMEOUT;
+    {  // Begin logged block
+    *event = TFTP_EVENT_TIMEOUT;
+    LOG_VAR_INT(*event); // Auto-logged
+    }  // End logged block
     state->rx_time = time(NULL); /* update even though we received nothing */
   }
 
@@ -1252,7 +1311,10 @@ static CURLcode tftp_multi_statemach(struct Curl_easy *data, bool *done)
       int error = SOCKERRNO;
       char buffer[STRERROR_LEN];
       failf(data, "%s", Curl_strerror(error, buffer, sizeof(buffer)));
-      state->event = TFTP_EVENT_ERROR;
+    {  // Begin logged block
+    state->event = TFTP_EVENT_ERROR;
+    LOG_VAR_INT(state->event); // Auto-logged
+    }  // End logged block
     }
     else if(rc) {
       result = tftp_receive_packet(data);
@@ -1383,7 +1445,10 @@ static CURLcode tftp_setup_connection(struct Curl_easy *data,
 
   if(type) {
     char command;
+    {  // Begin logged block
     *type = 0;                   /* it was in the middle of the hostname */
+    LOG_VAR_INT(*type); // Auto-logged
+    }  // End logged block
     command = Curl_raw_toupper(type[6]);
 
     switch(command) {

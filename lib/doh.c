@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -548,7 +553,10 @@ static void doh_store_a(const unsigned char *doh, int index,
   /* silently ignore addresses over the limit */
   if(d->numaddr < DOH_MAX_ADDR) {
     struct dohaddr *a = &d->addr[d->numaddr];
+    {  // Begin logged block
     a->type = DNS_TYPE_A;
+    LOG_VAR_INT(a->type); // Auto-logged
+    }  // End logged block
     memcpy(&a->ip.v4, &doh[index], 4);
     d->numaddr++;
   }
@@ -560,7 +568,10 @@ static void doh_store_aaaa(const unsigned char *doh, int index,
   /* silently ignore addresses over the limit */
   if(d->numaddr < DOH_MAX_ADDR) {
     struct dohaddr *a = &d->addr[d->numaddr];
+    {  // Begin logged block
     a->type = DNS_TYPE_AAAA;
+    LOG_VAR_INT(a->type); // Auto-logged
+    }  // End logged block
     memcpy(&a->ip.v6, &doh[index], 16);
     d->numaddr++;
   }
@@ -698,7 +709,10 @@ UNITTEST DOHcode doh_resp_decode(const unsigned char *doh,
   unsigned char rcode;
   unsigned short qdcount;
   unsigned short ancount;
-  unsigned short type = 0;
+    {  // Begin logged block
+    unsigned short type = 0;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
   unsigned short rdlength;
   unsigned short nscount;
   unsigned short arcount;

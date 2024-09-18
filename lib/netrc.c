@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -70,7 +75,10 @@ static int parsenetrc(const char *host,
   bool specific_login = (login && *login != 0);
   bool login_alloc = FALSE;
   bool password_alloc = FALSE;
-  enum host_lookup_state state = NOTHING;
+    enum host_lookup_state state = NOTHING;
+    {  // Begin logged block
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
 
   char state_login = 0;      /* Found a login keyword */
   char state_password = 0;   /* Found a password keyword */
@@ -92,7 +100,10 @@ static int parsenetrc(const char *host,
       char *netrcbuffer = Curl_dyn_ptr(&buf);
       if(state == MACDEF) {
         if((netrcbuffer[0] == '\n') || (netrcbuffer[0] == '\r'))
-          state = NOTHING;
+    {  // Begin logged block
+    state = NOTHING;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
         else
           continue;
       }
@@ -167,34 +178,52 @@ static int parsenetrc(const char *host,
             /* Define a macro. A macro is defined with the specified name; its
                contents begin with the next .netrc line and continue until a
                null line (consecutive new-line characters) is encountered. */
-            state = MACDEF;
+    {  // Begin logged block
+    state = MACDEF;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
           }
           else if(strcasecompare("machine", tok)) {
             /* the next tok is the machine name, this is in itself the
                delimiter that starts the stuff entered for this machine,
                after this we need to search for 'login' and
                'password'. */
-            state = HOSTFOUND;
+    {  // Begin logged block
+    state = HOSTFOUND;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
           }
           else if(strcasecompare("default", tok)) {
-            state = HOSTVALID;
+    {  // Begin logged block
+    state = HOSTVALID;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
             retcode = NETRC_SUCCESS; /* we did find our host */
           }
           break;
         case MACDEF:
           if(!strlen(tok)) {
-            state = NOTHING;
+    {  // Begin logged block
+    state = NOTHING;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
           }
           break;
         case HOSTFOUND:
           if(strcasecompare(host, tok)) {
             /* and yes, this is our host! */
-            state = HOSTVALID;
+    {  // Begin logged block
+    state = HOSTVALID;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
             retcode = NETRC_SUCCESS; /* we did find our host */
           }
           else
             /* not our host */
-            state = NOTHING;
+    {  // Begin logged block
+    state = NOTHING;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
           break;
         case HOSTVALID:
           /* we are now parsing sub-keywords concerning "our" host */
@@ -238,7 +267,10 @@ static int parsenetrc(const char *host,
             state_password = 1;
           else if(strcasecompare("machine", tok)) {
             /* ok, there is machine here go => */
-            state = HOSTFOUND;
+    {  // Begin logged block
+    state = HOSTFOUND;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
             state_our_login = FALSE;
           }
           break;

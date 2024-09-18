@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -576,7 +581,10 @@ CURLFORMcode FormAdd(struct curl_httppost **httppost,
         if(!type)
           type = prevtype;
         if(!type)
-          type = FILE_CONTENTTYPE_DEFAULT;
+    {  // Begin logged block
+    type = FILE_CONTENTTYPE_DEFAULT;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
 
         /* our contenttype is missing */
         form->contenttype = strdup(type);

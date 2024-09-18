@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -195,7 +200,10 @@ void Curl_sasl_init(struct SASL *sasl, struct Curl_easy *data,
   unsigned long auth = data->set.httpauth;
 
   sasl->params = params;           /* Set protocol dependent parameters */
-  sasl->state = SASL_STOP;         /* Not yet running */
+    {  // Begin logged block
+    sasl->state = SASL_STOP;         /* Not yet running */
+    LOG_VAR_INT(sasl->state); // Auto-logged
+    }  // End logged block
   sasl->curmech = NULL;            /* No mechanism yet. */
   sasl->authmechs = SASL_AUTH_NONE; /* No known authentication mechanism yet */
   sasl->prefmech = params->defmechs; /* Default preferred mechanisms */
@@ -366,7 +374,10 @@ CURLcode Curl_sasl_start(struct SASL *sasl, struct Curl_easy *data,
   sasl->force_ir = force_ir;    /* Latch for future use */
   sasl->authused = 0;           /* No mechanism used yet */
   enabledmechs = sasl->authmechs & sasl->prefmech;
-  *progress = SASL_IDLE;
+    {  // Begin logged block
+    *progress = SASL_IDLE;
+    LOG_VAR_INT(*progress); // Auto-logged
+    }  // End logged block
 
   /* Calculate the supported authentication mechanism, by decreasing order of
      security, as well as the initial response where appropriate */
@@ -515,7 +526,10 @@ CURLcode Curl_sasl_start(struct SASL *sasl, struct Curl_easy *data,
       result = sasl->params->sendauth(data, mech, &resp);
 
     if(!result) {
-      *progress = SASL_INPROGRESS;
+    {  // Begin logged block
+    *progress = SASL_INPROGRESS;
+    LOG_VAR_INT(*progress); // Auto-logged
+    }  // End logged block
       sasl_state(sasl, data, Curl_bufref_ptr(&resp) ? state2 : state1);
     }
   }
@@ -534,7 +548,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
 {
   CURLcode result = CURLE_OK;
   struct connectdata *conn = data->conn;
-  saslstate newstate = SASL_FINAL;
+    {  // Begin logged block
+    saslstate newstate = SASL_FINAL;
+    LOG_VAR_INT(newstate); // Auto-logged
+    }  // End logged block
   struct bufref resp;
   const char *hostname, *disp_hostname;
   int port;
@@ -550,26 +567,38 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
   Curl_conn_get_host(data, FIRSTSOCKET, &hostname, &disp_hostname, &port);
   Curl_bufref_init(&serverdata);
   Curl_bufref_init(&resp);
-  *progress = SASL_INPROGRESS;
+    {  // Begin logged block
+    *progress = SASL_INPROGRESS;
+    LOG_VAR_INT(*progress); // Auto-logged
+    }  // End logged block
 
   if(sasl->state == SASL_FINAL) {
     if(code != sasl->params->finalcode)
       result = CURLE_LOGIN_DENIED;
+    {  // Begin logged block
     *progress = SASL_DONE;
+    LOG_VAR_INT(*progress); // Auto-logged
+    }  // End logged block
     sasl_state(sasl, data, SASL_STOP);
     return result;
   }
 
   if(sasl->state != SASL_CANCEL && sasl->state != SASL_OAUTH2_RESP &&
      code != sasl->params->contcode) {
+    {  // Begin logged block
     *progress = SASL_DONE;
+    LOG_VAR_INT(*progress); // Auto-logged
+    }  // End logged block
     sasl_state(sasl, data, SASL_STOP);
     return CURLE_LOGIN_DENIED;
   }
 
   switch(sasl->state) {
   case SASL_STOP:
+    {  // Begin logged block
     *progress = SASL_DONE;
+    LOG_VAR_INT(*progress); // Auto-logged
+    }  // End logged block
     return result;
   case SASL_PLAIN:
     result = Curl_auth_create_plain_message(conn->sasl_authzid,
@@ -577,7 +606,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
     break;
   case SASL_LOGIN:
     Curl_auth_create_login_message(conn->user, &resp);
+    {  // Begin logged block
     newstate = SASL_LOGIN_PASSWD;
+    LOG_VAR_INT(newstate); // Auto-logged
+    }  // End logged block
     break;
   case SASL_LOGIN_PASSWD:
     Curl_auth_create_login_message(conn->passwd, &resp);
@@ -591,7 +623,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
     if(!result)
       result = Curl_auth_gsasl_token(data, &serverdata, &conn->gsasl, &resp);
     if(!result && Curl_bufref_len(&resp) > 0)
-      newstate = SASL_GSASL;
+    {  // Begin logged block
+    newstate = SASL_GSASL;
+    LOG_VAR_INT(newstate); // Auto-logged
+    }  // End logged block
     break;
 #endif
 #ifndef CURL_DISABLE_DIGEST_AUTH
@@ -608,7 +643,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
                                                    conn->user, conn->passwd,
                                                    service, &resp);
     if(!result && (sasl->params->flags & SASL_FLAG_BASE64))
-      newstate = SASL_DIGESTMD5_RESP;
+    {  // Begin logged block
+    newstate = SASL_DIGESTMD5_RESP;
+    LOG_VAR_INT(newstate); // Auto-logged
+    }  // End logged block
     break;
   case SASL_DIGESTMD5_RESP:
     /* Keep response NULL to output an empty line. */
@@ -622,7 +660,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
                                                  conn->user, conn->passwd,
                                                  service, hostname,
                                                  &conn->ntlm, &resp);
+    {  // Begin logged block
     newstate = SASL_NTLM_TYPE2MSG;
+    LOG_VAR_INT(newstate); // Auto-logged
+    }  // End logged block
     break;
   case SASL_NTLM_TYPE2MSG:
     /* Decode the type-2 message */
@@ -646,7 +687,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
                                                   sasl->mutual_auth, NULL,
                                                   &conn->krb5,
                                                   &resp);
+    {  // Begin logged block
     newstate = SASL_GSSAPI_TOKEN;
+    LOG_VAR_INT(newstate); // Auto-logged
+    }  // End logged block
     break;
   case SASL_GSSAPI_TOKEN:
     result = get_server_message(sasl, data, &serverdata);
@@ -660,7 +704,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
                                                       &serverdata,
                                                       &conn->krb5,
                                                       &resp);
-        newstate = SASL_GSSAPI_NO_DATA;
+    {  // Begin logged block
+    newstate = SASL_GSSAPI_NO_DATA;
+    LOG_VAR_INT(newstate); // Auto-logged
+    }  // End logged block
       }
       else
         /* Decode the security challenge and create the response message */
@@ -693,7 +740,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
                                                      &resp);
 
       /* Failures maybe sent by the server as continuations for OAUTHBEARER */
-      newstate = SASL_OAUTH2_RESP;
+    {  // Begin logged block
+    newstate = SASL_OAUTH2_RESP;
+    LOG_VAR_INT(newstate); // Auto-logged
+    }  // End logged block
     }
     else
       result = Curl_auth_create_xoauth_bearer_message(conn->user,
@@ -705,7 +755,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
     /* The continuation is optional so check the response code */
     if(code == sasl->params->finalcode) {
       /* Final response was received so we are done */
-      *progress = SASL_DONE;
+    {  // Begin logged block
+    *progress = SASL_DONE;
+    LOG_VAR_INT(*progress); // Auto-logged
+    }  // End logged block
       sasl_state(sasl, data, SASL_STOP);
       return result;
     }
@@ -715,7 +768,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
       break;
     }
     else {
-      *progress = SASL_DONE;
+    {  // Begin logged block
+    *progress = SASL_DONE;
+    LOG_VAR_INT(*progress); // Auto-logged
+    }  // End logged block
       sasl_state(sasl, data, SASL_STOP);
       return CURLE_LOGIN_DENIED;
     }
@@ -738,7 +794,10 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
   case CURLE_BAD_CONTENT_ENCODING:
     /* Cancel dialog */
     result = sasl->params->cancelauth(data, sasl->curmech);
+    {  // Begin logged block
     newstate = SASL_CANCEL;
+    LOG_VAR_INT(newstate); // Auto-logged
+    }  // End logged block
     break;
   case CURLE_OK:
     result = build_message(sasl, &resp);
@@ -746,8 +805,14 @@ CURLcode Curl_sasl_continue(struct SASL *sasl, struct Curl_easy *data,
       result = sasl->params->contauth(data, sasl->curmech, &resp);
     break;
   default:
+    {  // Begin logged block
     newstate = SASL_STOP;    /* Stop on error */
+    LOG_VAR_INT(newstate); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
     *progress = SASL_DONE;
+    LOG_VAR_INT(*progress); // Auto-logged
+    }  // End logged block
     break;
   }
 

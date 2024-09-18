@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -454,7 +459,10 @@ static CURLcode smb_connect(struct Curl_easy *data, bool *done)
     return CURLE_LOGIN_DENIED;
 
   /* Initialize the connection state */
-  smbc->state = SMB_CONNECTING;
+    {  // Begin logged block
+    smbc->state = SMB_CONNECTING;
+    LOG_VAR_INT(smbc->state); // Auto-logged
+    }  // End logged block
   smbc->recv_buf = malloc(MAX_MESSAGE_SIZE);
   if(!smbc->recv_buf)
     return CURLE_OUT_OF_MEMORY;
@@ -945,7 +953,10 @@ static CURLcode smb_request_state(struct Curl_easy *data, bool *done)
   struct smb_request *req = data->req.p.smb;
   struct smb_header *h;
   struct smb_conn *smbc = &conn->proto.smbc;
-  enum smb_req_state next_state = SMB_DONE;
+    enum smb_req_state next_state = SMB_DONE;
+    {  // Begin logged block
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
   unsigned short len;
   unsigned short off;
   CURLcode result;
@@ -989,7 +1000,10 @@ static CURLcode smb_request_state(struct Curl_easy *data, bool *done)
       break;
     }
     req->tid = smb_swap16(h->tid);
+    {  // Begin logged block
     next_state = SMB_OPEN;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
     break;
 
   case SMB_OPEN:
@@ -997,7 +1011,10 @@ static CURLcode smb_request_state(struct Curl_easy *data, bool *done)
       req->result = CURLE_REMOTE_FILE_NOT_FOUND;
       if(h->status == smb_swap32(SMB_ERR_NOACCESS))
         req->result = CURLE_REMOTE_ACCESS_DENIED;
-      next_state = SMB_TREE_DISCONNECT;
+    {  // Begin logged block
+    next_state = SMB_TREE_DISCONNECT;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
       break;
     }
     smb_m = (const struct smb_nt_create_response*) msg;
@@ -1006,19 +1023,28 @@ static CURLcode smb_request_state(struct Curl_easy *data, bool *done)
     if(data->state.upload) {
       data->req.size = data->state.infilesize;
       Curl_pgrsSetUploadSize(data, data->req.size);
-      next_state = SMB_UPLOAD;
+    {  // Begin logged block
+    next_state = SMB_UPLOAD;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
     }
     else {
       data->req.size = smb_swap64(smb_m->end_of_file);
       if(data->req.size < 0) {
         req->result = CURLE_WEIRD_SERVER_REPLY;
-        next_state = SMB_CLOSE;
+    {  // Begin logged block
+    next_state = SMB_CLOSE;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
       }
       else {
         Curl_pgrsSetDownloadSize(data, data->req.size);
         if(data->set.get_filetime)
           get_posix_time(&data->info.filetime, smb_m->last_change_time);
-        next_state = SMB_DOWNLOAD;
+    {  // Begin logged block
+    next_state = SMB_DOWNLOAD;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
       }
     }
     break;
@@ -1026,7 +1052,10 @@ static CURLcode smb_request_state(struct Curl_easy *data, bool *done)
   case SMB_DOWNLOAD:
     if(h->status || smbc->got < sizeof(struct smb_header) + 14) {
       req->result = CURLE_RECV_ERROR;
-      next_state = SMB_CLOSE;
+    {  // Begin logged block
+    next_state = SMB_CLOSE;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
       break;
     }
     len = Curl_read16_le(((const unsigned char *) msg) +
@@ -1044,7 +1073,10 @@ static CURLcode smb_request_state(struct Curl_easy *data, bool *done)
                                    len);
       if(result) {
         req->result = result;
-        next_state = SMB_CLOSE;
+    {  // Begin logged block
+    next_state = SMB_CLOSE;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
         break;
       }
     }
@@ -1055,7 +1087,10 @@ static CURLcode smb_request_state(struct Curl_easy *data, bool *done)
   case SMB_UPLOAD:
     if(h->status || smbc->got < sizeof(struct smb_header) + 6) {
       req->result = CURLE_UPLOAD_FAILED;
-      next_state = SMB_CLOSE;
+    {  // Begin logged block
+    next_state = SMB_CLOSE;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
       break;
     }
     len = Curl_read16_le(((const unsigned char *) msg) +
@@ -1064,18 +1099,30 @@ static CURLcode smb_request_state(struct Curl_easy *data, bool *done)
     data->req.offset += len;
     Curl_pgrsSetUploadCounter(data, data->req.bytecount);
     if(data->req.bytecount >= data->req.size)
-      next_state = SMB_CLOSE;
+    {  // Begin logged block
+    next_state = SMB_CLOSE;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
     else
-      next_state = SMB_UPLOAD;
+    {  // Begin logged block
+    next_state = SMB_UPLOAD;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
     break;
 
   case SMB_CLOSE:
     /* We do not care if the close failed, proceed to tree disconnect anyway */
+    {  // Begin logged block
     next_state = SMB_TREE_DISCONNECT;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
     break;
 
   case SMB_TREE_DISCONNECT:
+    {  // Begin logged block
     next_state = SMB_DONE;
+    LOG_VAR_INT(next_state); // Auto-logged
+    }  // End logged block
     break;
 
   default:

@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -365,7 +370,10 @@ static int parsedate(const char *date, time_t *output)
   int secnum = -1;
   int yearnum = -1;
   int tzoff = -1;
-  enum assume dignext = DATE_MDAY;
+    {  // Begin logged block
+    enum assume dignext = DATE_MDAY;
+    LOG_VAR_INT(dignext); // Auto-logged
+    }  // End logged block
   const char *indate = date; /* save the original pointer */
   int part = 0; /* max 6 parts */
 
@@ -475,7 +483,10 @@ static int parsedate(const char *date, time_t *output)
             mdaynum = val;
             found = TRUE;
           }
-          dignext = DATE_YEAR;
+    {  // Begin logged block
+    dignext = DATE_YEAR;
+    LOG_VAR_INT(dignext); // Auto-logged
+    }  // End logged block
         }
 
         if(!found && (dignext == DATE_YEAR) && (yearnum == -1)) {
@@ -488,7 +499,10 @@ static int parsedate(const char *date, time_t *output)
               yearnum += 2000;
           }
           if(mdaynum == -1)
-            dignext = DATE_MDAY;
+    {  // Begin logged block
+    dignext = DATE_MDAY;
+    LOG_VAR_INT(dignext); // Auto-logged
+    }  // End logged block
         }
 
         if(!found)

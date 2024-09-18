@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -2173,7 +2178,10 @@ static CURLMcode multi_runsingle(struct Curl_multi *multi,
            * back to the CONNECT phase so we can try again.
            */
           char *newurl = NULL;
-          followtype follow = FOLLOW_NONE;
+    followtype follow = FOLLOW_NONE;
+    {  // Begin logged block
+    LOG_VAR_INT(follow); // Auto-logged
+    }  // End logged block
           CURLcode drc;
 
           drc = Curl_retry_request(data, &newurl);
@@ -2190,7 +2198,10 @@ static CURLMcode multi_runsingle(struct Curl_multi *multi,
            * state */
           if(newurl) {
             if(!drc || (drc == CURLE_SEND_ERROR)) {
-              follow = FOLLOW_RETRY;
+    {  // Begin logged block
+    follow = FOLLOW_RETRY;
+    LOG_VAR_INT(follow); // Auto-logged
+    }  // End logged block
               drc = Curl_follow(data, newurl, follow);
               if(!drc) {
                 multistate(data, MSTATE_SETUP);
@@ -2284,7 +2295,10 @@ static CURLMcode multi_runsingle(struct Curl_multi *multi,
 #ifndef CURL_DISABLE_FTP
         if(data->state.wildcardmatch &&
            ((data->conn->handler->flags & PROTOPT_WILDCARD) == 0)) {
-          data->wildcard->state = CURLWC_DONE;
+    {  // Begin logged block
+    data->wildcard->state = CURLWC_DONE;
+    LOG_VAR_INT(data->wildcard->state); // Auto-logged
+    }  // End logged block
         }
 #endif
         multistate(data, MSTATE_DONE);
@@ -2432,17 +2446,26 @@ static CURLMcode multi_runsingle(struct Curl_multi *multi,
         /* When we follow redirects or is set to retry the connection, we must
            to go back to the CONNECT state */
         if(data->req.newurl || retry) {
-          followtype follow = FOLLOW_NONE;
+    followtype follow = FOLLOW_NONE;
+    {  // Begin logged block
+    LOG_VAR_INT(follow); // Auto-logged
+    }  // End logged block
           if(!retry) {
             /* if the URL is a follow-location and not just a retried request
                then figure out the URL here */
             free(newurl);
             newurl = data->req.newurl;
             data->req.newurl = NULL;
-            follow = FOLLOW_REDIR;
+    {  // Begin logged block
+    follow = FOLLOW_REDIR;
+    LOG_VAR_INT(follow); // Auto-logged
+    }  // End logged block
           }
           else
-            follow = FOLLOW_RETRY;
+    {  // Begin logged block
+    follow = FOLLOW_RETRY;
+    LOG_VAR_INT(follow); // Auto-logged
+    }  // End logged block
           (void)multi_done(data, CURLE_OK, FALSE);
           /* multi_done() might return CURLE_GOT_NOTHING */
           result = Curl_follow(data, newurl, follow);

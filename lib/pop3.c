@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -603,7 +608,10 @@ static CURLcode pop3_perform_authentication(struct Curl_easy *data,
 {
   CURLcode result = CURLE_OK;
   struct pop3_conn *pop3c = &conn->proto.pop3c;
-  saslprogress progress = SASL_IDLE;
+    {  // Begin logged block
+    saslprogress progress = SASL_IDLE;
+    LOG_VAR_INT(progress); // Auto-logged
+    }  // End logged block
 
   /* Check we have enough data to authenticate with and end the
      connect phase if we do not */

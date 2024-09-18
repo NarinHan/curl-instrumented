@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -53,7 +58,10 @@ struct cf_haproxy_ctx {
 static void cf_haproxy_ctx_reset(struct cf_haproxy_ctx *ctx)
 {
   DEBUGASSERT(ctx);
-  ctx->state = HAPROXY_INIT;
+    {  // Begin logged block
+    ctx->state = HAPROXY_INIT;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
   Curl_dyn_reset(&ctx->data_out);
 }
 
@@ -126,7 +134,10 @@ static CURLcode cf_haproxy_connect(struct Curl_cfilter *cf,
     result = cf_haproxy_date_out_set(cf, data);
     if(result)
       goto out;
+    {  // Begin logged block
     ctx->state = HAPROXY_SEND;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     FALLTHROUGH();
   case HAPROXY_SEND:
     len = Curl_dyn_len(&ctx->data_out);
@@ -147,7 +158,10 @@ static CURLcode cf_haproxy_connect(struct Curl_cfilter *cf,
         goto out;
       }
     }
+    {  // Begin logged block
     ctx->state = HAPROXY_DONE;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     FALLTHROUGH();
   default:
     Curl_dyn_free(&ctx->data_out);
@@ -221,7 +235,10 @@ static CURLcode cf_haproxy_create(struct Curl_cfilter **pcf,
     result = CURLE_OUT_OF_MEMORY;
     goto out;
   }
-  ctx->state = HAPROXY_INIT;
+    {  // Begin logged block
+    ctx->state = HAPROXY_INIT;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
   Curl_dyn_init(&ctx->data_out, DYN_HAXPROXY);
 
   result = Curl_cf_create(&cf, &Curl_cft_haproxy, ctx);

@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -1067,10 +1072,16 @@ static size_t mime_subparts_read(char *buffer, size_t size, size_t nitems,
 static int mime_part_rewind(curl_mimepart *part)
 {
   int res = CURL_SEEKFUNC_OK;
-  enum mimestate targetstate = MIMESTATE_BEGIN;
+    enum mimestate targetstate = MIMESTATE_BEGIN;
+    {  // Begin logged block
+    LOG_VAR_INT(targetstate); // Auto-logged
+    }  // End logged block
 
   if(part->flags & MIME_BODY_ONLY)
+    {  // Begin logged block
     targetstate = MIMESTATE_BODY;
+    LOG_VAR_INT(targetstate); // Auto-logged
+    }  // End logged block
   cleanup_encoder_state(&part->encstate);
   if(part->state.state > targetstate) {
     res = CURL_SEEKFUNC_CANTSEEK;
@@ -1139,7 +1150,10 @@ static void cleanup_part_content(curl_mimepart *part)
   part->kind = MIMEKIND_NONE;
   part->flags &= ~(unsigned int)MIME_FAST_READ;
   part->lastreadstatus = 1; /* Successful read status. */
-  part->state.state = MIMESTATE_BEGIN;
+    {  // Begin logged block
+    part->state.state = MIMESTATE_BEGIN;
+    LOG_VAR_INT(part->state.state); // Auto-logged
+    }  // End logged block
 }
 
 static void mime_subparts_free(void *ptr)

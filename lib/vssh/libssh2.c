@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -980,7 +985,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
     switch(sshc->state) {
     case SSH_INIT:
       sshc->secondCreateDirs = 0;
-      sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
       sshc->actualcode = CURLE_OK;
 
       /* Set libssh2 to non-blocking, since everything internally is
@@ -1516,7 +1524,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         if(!tmp) {
           result = CURLE_OUT_OF_MEMORY;
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           break;
         }
         Curl_debug(data, CURLINFO_HEADER_OUT, (char *)"PWD\n", 4);
@@ -1529,7 +1540,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         free(tmp);
         if(result) {
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           sshc->actualcode = result;
         }
         else
@@ -1546,7 +1560,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         failf(data, "Syntax error command '%s', missing parameter",
               cmd);
         state(data, SSH_SFTP_CLOSE);
-        sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
         sshc->actualcode = CURLE_QUOTE_ERROR;
         break;
       }
@@ -1562,7 +1579,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         else
           failf(data, "Syntax error: Bad first parameter to '%s'", cmd);
         state(data, SSH_SFTP_CLOSE);
-        sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
         sshc->actualcode = result;
         break;
       }
@@ -1590,7 +1610,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
             failf(data, "Syntax error in %s: Bad second parameter", cmd);
           Curl_safefree(sshc->quote_path1);
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           sshc->actualcode = result;
           break;
         }
@@ -1612,7 +1635,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
                   "Syntax error in ln/symlink: Bad second parameter");
           Curl_safefree(sshc->quote_path1);
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           sshc->actualcode = result;
           break;
         }
@@ -1636,7 +1662,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
             failf(data, "Syntax error in rename: Bad second parameter");
           Curl_safefree(sshc->quote_path1);
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           sshc->actualcode = result;
           break;
         }
@@ -1663,7 +1692,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
       Curl_safefree(sshc->quote_path1);
       Curl_safefree(sshc->quote_path2);
       state(data, SSH_SFTP_CLOSE);
-      sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
       sshc->actualcode = CURLE_QUOTE_ERROR;
       break;
     }
@@ -1680,7 +1712,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
       else {
         if(sshc->nextstate != SSH_NO_STATE) {
           state(data, sshc->nextstate);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
         }
         else {
           state(data, SSH_SFTP_GETINFO);
@@ -1722,7 +1757,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
           failf(data, "Attempt to get SFTP stats failed: %s",
                 sftp_libssh2_strerror(sftperr));
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           sshc->actualcode = CURLE_QUOTE_ERROR;
           break;
         }
@@ -1738,7 +1776,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
           Curl_safefree(sshc->quote_path2);
           failf(data, "Syntax error: chgrp gid not a number");
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           sshc->actualcode = CURLE_QUOTE_ERROR;
           break;
         }
@@ -1753,7 +1794,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
           Curl_safefree(sshc->quote_path2);
           failf(data, "Syntax error: chmod permissions not a number");
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           sshc->actualcode = CURLE_QUOTE_ERROR;
           break;
         }
@@ -1767,7 +1811,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
           Curl_safefree(sshc->quote_path2);
           failf(data, "Syntax error: chown uid not a number");
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           sshc->actualcode = CURLE_QUOTE_ERROR;
           break;
         }
@@ -1792,7 +1839,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
           Curl_safefree(sshc->quote_path1);
           Curl_safefree(sshc->quote_path2);
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           sshc->actualcode = CURLE_QUOTE_ERROR;
           break;
         }
@@ -1824,7 +1874,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         failf(data, "Attempt to set SFTP stats failed: %s",
               sftp_libssh2_strerror(sftperr));
         state(data, SSH_SFTP_CLOSE);
-        sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
         sshc->actualcode = CURLE_QUOTE_ERROR;
         break;
       }
@@ -1847,7 +1900,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         failf(data, "symlink command failed: %s",
               sftp_libssh2_strerror(sftperr));
         state(data, SSH_SFTP_CLOSE);
-        sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
         sshc->actualcode = CURLE_QUOTE_ERROR;
         break;
       }
@@ -1867,7 +1923,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         failf(data, "mkdir command failed: %s",
               sftp_libssh2_strerror(sftperr));
         state(data, SSH_SFTP_CLOSE);
-        sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
         sshc->actualcode = CURLE_QUOTE_ERROR;
         break;
       }
@@ -1893,7 +1952,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         failf(data, "rename command failed: %s",
               sftp_libssh2_strerror(sftperr));
         state(data, SSH_SFTP_CLOSE);
-        sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
         sshc->actualcode = CURLE_QUOTE_ERROR;
         break;
       }
@@ -1912,7 +1974,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         failf(data, "rmdir command failed: %s",
               sftp_libssh2_strerror(sftperr));
         state(data, SSH_SFTP_CLOSE);
-        sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
         sshc->actualcode = CURLE_QUOTE_ERROR;
         break;
       }
@@ -1930,7 +1995,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         Curl_safefree(sshc->quote_path1);
         failf(data, "rm command failed: %s", sftp_libssh2_strerror(sftperr));
         state(data, SSH_SFTP_CLOSE);
-        sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
         sshc->actualcode = CURLE_QUOTE_ERROR;
         break;
       }
@@ -1954,7 +2022,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         failf(data, "statvfs command failed: %s",
               sftp_libssh2_strerror(sftperr));
         state(data, SSH_SFTP_CLOSE);
-        sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
         sshc->actualcode = CURLE_QUOTE_ERROR;
         break;
       }
@@ -1985,7 +2056,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         if(!tmp) {
           result = CURLE_OUT_OF_MEMORY;
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           break;
         }
 
@@ -1993,7 +2067,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
         free(tmp);
         if(result) {
           state(data, SSH_SFTP_CLOSE);
-          sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
           sshc->actualcode = result;
         }
       }
@@ -2640,7 +2717,10 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
       if(sshc->nextstate != SSH_NO_STATE &&
          sshc->nextstate != SSH_SFTP_CLOSE) {
         state(data, sshc->nextstate);
-        sshc->nextstate = SSH_SFTP_CLOSE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_SFTP_CLOSE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
       }
       else {
         state(data, SSH_STOP);
@@ -3018,15 +3098,24 @@ static CURLcode ssh_statemach_act(struct Curl_easy *data, bool *block)
       memset(sshc, 0, sizeof(struct ssh_conn));
 
       connclose(conn, "SSH session free");
-      sshc->state = SSH_SESSION_FREE; /* current */
-      sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->state = SSH_SESSION_FREE; /* current */
+    LOG_VAR_INT(sshc->state); // Auto-logged
+    }  // End logged block
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
       state(data, SSH_STOP);
       break;
 
     case SSH_QUIT:
     default:
       /* internal error */
-      sshc->nextstate = SSH_NO_STATE;
+    {  // Begin logged block
+    sshc->nextstate = SSH_NO_STATE;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
       state(data, SSH_STOP);
       break;
     }
@@ -3665,7 +3754,10 @@ static CURLcode sftp_done(struct Curl_easy *data, CURLcode status,
        errors that could happen due to open file handles during POSTQUOTE
        operation */
     if(!premature && data->set.postquote && !conn->bits.retry)
-      sshc->nextstate = SSH_SFTP_POSTQUOTE_INIT;
+    {  // Begin logged block
+    sshc->nextstate = SSH_SFTP_POSTQUOTE_INIT;
+    LOG_VAR_INT(sshc->nextstate); // Auto-logged
+    }  // End logged block
     state(data, SSH_SFTP_CLOSE);
   }
   return ssh_done(data, status);

@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -87,7 +92,10 @@ static CURLcode tunnel_stream_init(struct Curl_cfilter *cf,
   bool ipv6_ip;
   CURLcode result;
 
-  ts->state = H2_TUNNEL_INIT;
+    {  // Begin logged block
+    ts->state = H2_TUNNEL_INIT;
+    LOG_VAR_INT(ts->state); // Auto-logged
+    }  // End logged block
   ts->stream_id = -1;
   Curl_bufq_init2(&ts->recvbuf, PROXY_H2_CHUNK_SIZE, H2_TUNNEL_RECV_CHUNKS,
                   BUFQ_OPT_SOFT_LIMIT);
@@ -112,7 +120,10 @@ static void tunnel_stream_clear(struct tunnel_stream *ts)
   Curl_bufq_free(&ts->sendbuf);
   Curl_safefree(ts->authority);
   memset(ts, 0, sizeof(*ts));
-  ts->state = H2_TUNNEL_INIT;
+    {  // Begin logged block
+    ts->state = H2_TUNNEL_INIT;
+    LOG_VAR_INT(ts->state); // Auto-logged
+    }  // End logged block
 }
 
 static void h2_tunnel_go_state(struct Curl_cfilter *cf,
@@ -141,12 +152,18 @@ static void h2_tunnel_go_state(struct Curl_cfilter *cf,
 
   case H2_TUNNEL_CONNECT:
     CURL_TRC_CF(data, cf, "[%d] new tunnel state 'connect'", ts->stream_id);
+    {  // Begin logged block
     ts->state = H2_TUNNEL_CONNECT;
+    LOG_VAR_INT(ts->state); // Auto-logged
+    }  // End logged block
     break;
 
   case H2_TUNNEL_RESPONSE:
     CURL_TRC_CF(data, cf, "[%d] new tunnel state 'response'", ts->stream_id);
+    {  // Begin logged block
     ts->state = H2_TUNNEL_RESPONSE;
+    LOG_VAR_INT(ts->state); // Auto-logged
+    }  // End logged block
     break;
 
   case H2_TUNNEL_ESTABLISHED:

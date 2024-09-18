@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -553,7 +558,10 @@ static CURLcode bearssl_connect_step1(struct Curl_cfilter *cf,
   if(verifypeer) {
     if(ca_info_blob) {
       struct cafile_source source;
-      source.type = CAFILE_SOURCE_BLOB;
+    {  // Begin logged block
+    source.type = CAFILE_SOURCE_BLOB;
+    LOG_VAR_INT(source.type); // Auto-logged
+    }  // End logged block
       source.data = ca_info_blob->data;
       source.len = ca_info_blob->len;
 
@@ -567,7 +575,10 @@ static CURLcode bearssl_connect_step1(struct Curl_cfilter *cf,
 
     if(ssl_cafile) {
       struct cafile_source source;
-      source.type = CAFILE_SOURCE_PATH;
+    {  // Begin logged block
+    source.type = CAFILE_SOURCE_PATH;
+    LOG_VAR_INT(source.type); // Auto-logged
+    }  // End logged block
       source.data = ssl_cafile;
       source.len = 0;
 

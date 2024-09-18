@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -161,7 +166,10 @@ static void cf_hc_reset(struct Curl_cfilter *cf, struct Curl_easy *data)
   if(ctx) {
     cf_hc_baller_reset(&ctx->h3_baller, data);
     cf_hc_baller_reset(&ctx->h21_baller, data);
+    {  // Begin logged block
     ctx->state = CF_HC_INIT;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     ctx->result = CURLE_OK;
     ctx->hard_eyeballs_timeout_ms = data->set.happy_eyeballs_timeout;
     ctx->soft_eyeballs_timeout_ms = data->set.happy_eyeballs_timeout / 2;
@@ -197,7 +205,10 @@ static CURLcode baller_connected(struct Curl_cfilter *cf,
      * closes, we tear it down for a fresh reconnect */
     result = Curl_http2_switch_at(cf, data);
     if(result) {
-      ctx->state = CF_HC_FAILURE;
+    {  // Begin logged block
+    ctx->state = CF_HC_FAILURE;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
       ctx->result = result;
       return result;
     }
@@ -208,7 +219,10 @@ static CURLcode baller_connected(struct Curl_cfilter *cf,
     infof(data, "using HTTP/1.x");
     break;
   }
-  ctx->state = CF_HC_SUCCESS;
+    {  // Begin logged block
+    ctx->state = CF_HC_SUCCESS;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
   cf->connected = TRUE;
   return result;
 }
@@ -279,7 +293,10 @@ static CURLcode cf_hc_connect(struct Curl_cfilter *cf,
     else if(ctx->h21_baller.enabled)
       cf_hc_baller_init(&ctx->h21_baller, cf, data, "h21",
                        cf->conn->transport);
+    {  // Begin logged block
     ctx->state = CF_HC_CONNECT;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     FALLTHROUGH();
 
   case CF_HC_CONNECT:
@@ -311,7 +328,10 @@ static CURLcode cf_hc_connect(struct Curl_cfilter *cf,
       CURL_TRC_CF(data, cf, "connect, all failed");
       result = ctx->result = ctx->h3_baller.enabled?
                               ctx->h3_baller.result : ctx->h21_baller.result;
-      ctx->state = CF_HC_FAILURE;
+    {  // Begin logged block
+    ctx->state = CF_HC_FAILURE;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
       goto out;
     }
     result = CURLE_OK;

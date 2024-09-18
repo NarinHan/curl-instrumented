@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -101,7 +106,10 @@ static CURLcode tunnel_reinit(struct Curl_cfilter *cf,
   DEBUGASSERT(ts);
   Curl_dyn_reset(&ts->rcvbuf);
   Curl_dyn_reset(&ts->request_data);
-  ts->tunnel_state = H1_TUNNEL_INIT;
+    {  // Begin logged block
+    ts->tunnel_state = H1_TUNNEL_INIT;
+    LOG_VAR_INT(ts->tunnel_state); // Auto-logged
+    }  // End logged block
   ts->keepon = KEEPON_CONNECT;
   ts->cl = 0;
   ts->close_connection = FALSE;
@@ -150,19 +158,28 @@ static void h1_tunnel_go_state(struct Curl_cfilter *cf,
 
   case H1_TUNNEL_CONNECT:
     CURL_TRC_CF(data, cf, "new tunnel state 'connect'");
+    {  // Begin logged block
     ts->tunnel_state = H1_TUNNEL_CONNECT;
+    LOG_VAR_INT(ts->tunnel_state); // Auto-logged
+    }  // End logged block
     ts->keepon = KEEPON_CONNECT;
     Curl_dyn_reset(&ts->rcvbuf);
     break;
 
   case H1_TUNNEL_RECEIVE:
     CURL_TRC_CF(data, cf, "new tunnel state 'receive'");
+    {  // Begin logged block
     ts->tunnel_state = H1_TUNNEL_RECEIVE;
+    LOG_VAR_INT(ts->tunnel_state); // Auto-logged
+    }  // End logged block
     break;
 
   case H1_TUNNEL_RESPONSE:
     CURL_TRC_CF(data, cf, "new tunnel state 'response'");
+    {  // Begin logged block
     ts->tunnel_state = H1_TUNNEL_RESPONSE;
+    LOG_VAR_INT(ts->tunnel_state); // Auto-logged
+    }  // End logged block
     break;
 
   case H1_TUNNEL_ESTABLISHED:

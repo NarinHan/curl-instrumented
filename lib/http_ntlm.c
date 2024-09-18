@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -97,7 +102,10 @@ CURLcode Curl_input_ntlm(struct Curl_easy *data,
       if(result)
         return result;
 
-      *state = NTLMSTATE_TYPE2; /* We got a type-2 message */
+    {  // Begin logged block
+    *state = NTLMSTATE_TYPE2; /* We got a type-2 message */
+    LOG_VAR_INT(*state); // Auto-logged
+    }  // End logged block
     }
     else {
       if(*state == NTLMSTATE_LAST) {
@@ -107,7 +115,10 @@ CURLcode Curl_input_ntlm(struct Curl_easy *data,
       else if(*state == NTLMSTATE_TYPE3) {
         infof(data, "NTLM handshake rejected");
         Curl_http_auth_cleanup_ntlm(conn);
-        *state = NTLMSTATE_NONE;
+    {  // Begin logged block
+    *state = NTLMSTATE_NONE;
+    LOG_VAR_INT(*state); // Auto-logged
+    }  // End logged block
         return CURLE_REMOTE_ACCESS_DENIED;
       }
       else if(*state >= NTLMSTATE_TYPE1) {
@@ -115,7 +126,10 @@ CURLcode Curl_input_ntlm(struct Curl_easy *data,
         return CURLE_REMOTE_ACCESS_DENIED;
       }
 
-      *state = NTLMSTATE_TYPE1; /* We should send away a type-1 */
+    {  // Begin logged block
+    *state = NTLMSTATE_TYPE1; /* We should send away a type-1 */
+    LOG_VAR_INT(*state); // Auto-logged
+    }  // End logged block
     }
   }
 
@@ -203,7 +217,10 @@ CURLcode Curl_output_ntlm(struct Curl_easy *data, bool proxy)
   /* connection is already authenticated, do not send a header in future
    * requests so go directly to NTLMSTATE_LAST */
   if(*state == NTLMSTATE_TYPE3)
+    {  // Begin logged block
     *state = NTLMSTATE_LAST;
+    LOG_VAR_INT(*state); // Auto-logged
+    }  // End logged block
 
   switch(*state) {
   case NTLMSTATE_TYPE1:
@@ -244,7 +261,10 @@ CURLcode Curl_output_ntlm(struct Curl_easy *data, bool proxy)
         if(!*allocuserpwd)
           result = CURLE_OUT_OF_MEMORY;
         else {
-          *state = NTLMSTATE_TYPE3; /* we send a type-3 */
+    {  // Begin logged block
+    *state = NTLMSTATE_TYPE3; /* we send a type-3 */
+    LOG_VAR_INT(*state); // Auto-logged
+    }  // End logged block
           authp->done = TRUE;
         }
       }

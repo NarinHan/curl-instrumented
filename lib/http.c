@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -1636,7 +1641,10 @@ void Curl_http_method(struct Curl_easy *data, struct connectdata *conn,
   const char *request;
   if((conn->handler->protocol&(PROTO_FAMILY_HTTP|CURLPROTO_FTP)) &&
      data->state.upload)
+    {  // Begin logged block
     httpreq = HTTPREQ_PUT;
+    LOG_VAR_INT(httpreq); // Auto-logged
+    }  // End logged block
 
   /* Now set the 'request' pointer to the proper request string */
   if(data->set.str[STRING_CUSTOMREQUEST])
@@ -1853,7 +1861,10 @@ CURLcode Curl_http_target(struct Curl_easy *data,
           case 'I':
             break;
           default:
-            type = NULL;
+    {  // Begin logged block
+    type = NULL;
+    LOG_VAR_INT(type); // Auto-logged
+    }  // End logged block
           }
         }
         if(!type) {
@@ -3523,11 +3534,17 @@ static CURLcode http_on_response(struct Curl_easy *data,
   }
   if((conn->http_negotiate_state == GSS_AUTHDONE) &&
      (data->req.httpcode != 401)) {
+    {  // Begin logged block
     conn->http_negotiate_state = GSS_AUTHSUCC;
+    LOG_VAR_INT(conn->http_negotiate_state); // Auto-logged
+    }  // End logged block
   }
   if((conn->proxy_negotiate_state == GSS_AUTHDONE) &&
      (data->req.httpcode != 407)) {
+    {  // Begin logged block
     conn->proxy_negotiate_state = GSS_AUTHSUCC;
+    LOG_VAR_INT(conn->proxy_negotiate_state); // Auto-logged
+    }  // End logged block
   }
 #endif
 
@@ -4411,7 +4428,10 @@ static void http_exp100_continue(struct Curl_easy *data,
 {
   struct cr_exp100_ctx *ctx = reader->ctx;
   if(ctx->state > EXP100_SEND_DATA) {
+    {  // Begin logged block
     ctx->state = EXP100_SEND_DATA;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     data->req.keepon |= KEEP_SEND;
     data->req.keepon &= ~KEEP_SEND_TIMED;
     Curl_expire_done(data, EXPIRE_100_TIMEOUT);
@@ -4440,7 +4460,10 @@ static CURLcode cr_exp100_read(struct Curl_easy *data,
      * a timeout on our side IFF the request has been fully sent. */
     DEBUGF(infof(data, "cr_exp100_read, start AWAITING_CONTINUE, "
            "timeout %ldms", data->set.expect_100_timeout));
+    {  // Begin logged block
     ctx->state = EXP100_AWAITING_CONTINUE;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
     ctx->start = Curl_now();
     Curl_expire(data, data->set.expect_100_timeout, EXPIRE_100_TIMEOUT);
     data->req.keepon &= ~KEEP_SEND;
@@ -4508,7 +4531,10 @@ static CURLcode http_exp100_add_reader(struct Curl_easy *data)
     result = Curl_creader_add(data, reader);
   if(!result) {
     struct cr_exp100_ctx *ctx = reader->ctx;
+    {  // Begin logged block
     ctx->state = EXP100_SENDING_REQUEST;
+    LOG_VAR_INT(ctx->state); // Auto-logged
+    }  // End logged block
   }
 
   if(result && reader)

@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -73,7 +78,10 @@ typedef enum {
 
 static int parsekeyword(unsigned char **pattern, unsigned char *charset)
 {
-  parsekey_state state = CURLFNM_PKW_INIT;
+    parsekey_state state = CURLFNM_PKW_INIT;
+    {  // Begin logged block
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
 #define KEYLEN 10
   char keyword[KEYLEN] = { 0 };
   int i;
@@ -88,7 +96,10 @@ static int parsekeyword(unsigned char **pattern, unsigned char *charset)
       if(ISLOWER(c))
         keyword[i] = c;
       else if(c == ':')
-        state = CURLFNM_PKW_DDOT;
+    {  // Begin logged block
+    state = CURLFNM_PKW_DDOT;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
       else
         return SETCHARSET_FAIL;
       break;
@@ -164,7 +175,10 @@ static void setcharorrange(unsigned char **pp, unsigned char *charset)
 /* returns 1 (true) if pattern is OK, 0 if is bad ("p" is pattern pointer) */
 static int setcharset(unsigned char **p, unsigned char *charset)
 {
-  setcharset_state state = CURLFNM_SCHS_DEFAULT;
+    {  // Begin logged block
+    setcharset_state state = CURLFNM_SCHS_DEFAULT;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
   bool something_found = FALSE;
   unsigned char c;
 
@@ -180,7 +194,10 @@ static int setcharset(unsigned char **p, unsigned char *charset)
         if(something_found)
           return SETCHARSET_OK;
         something_found = TRUE;
-        state = CURLFNM_SCHS_RIGHTBR;
+    {  // Begin logged block
+    state = CURLFNM_SCHS_RIGHTBR;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
         charset[c] = 1;
         (*p)++;
       }
@@ -223,7 +240,10 @@ static int setcharset(unsigned char **p, unsigned char *charset)
       break;
     case CURLFNM_SCHS_RIGHTBR:
       if(c == '[') {
-        state = CURLFNM_SCHS_RIGHTBRLEFTBR;
+    {  // Begin logged block
+    state = CURLFNM_SCHS_RIGHTBRLEFTBR;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
         charset[c] = 1;
         (*p)++;
       }
@@ -233,7 +253,10 @@ static int setcharset(unsigned char **p, unsigned char *charset)
       else if(ISPRINT(c)) {
         charset[c] = 1;
         (*p)++;
-        state = CURLFNM_SCHS_DEFAULT;
+    {  // Begin logged block
+    state = CURLFNM_SCHS_DEFAULT;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
       }
       else
         /* used 'goto fail' instead of 'return SETCHARSET_FAIL' to avoid a
@@ -244,7 +267,10 @@ static int setcharset(unsigned char **p, unsigned char *charset)
     case CURLFNM_SCHS_RIGHTBRLEFTBR:
       if(c == ']')
         return SETCHARSET_OK;
-      state  = CURLFNM_SCHS_DEFAULT;
+    {  // Begin logged block
+    state  = CURLFNM_SCHS_DEFAULT;
+    LOG_VAR_INT(state); // Auto-logged
+    }  // End logged block
       charset[c] = 1;
       (*p)++;
       break;

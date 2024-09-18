@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -370,7 +375,10 @@ CURLcode Curl_init_userdefined(struct Curl_easy *data)
 
   set->method = HTTPREQ_GET; /* Default HTTP request */
 #ifndef CURL_DISABLE_RTSP
-  set->rtspreq = RTSPREQ_OPTIONS; /* Default RTSP request */
+    {  // Begin logged block
+    set->rtspreq = RTSPREQ_OPTIONS; /* Default RTSP request */
+    LOG_VAR_INT(set->rtspreq); // Auto-logged
+    }  // End logged block
 #endif
 #ifndef CURL_DISABLE_FTP
   set->ftp_use_epsv = TRUE;   /* FTP defaults to EPSV operations */
@@ -3755,7 +3763,10 @@ CURLcode Curl_init_do(struct Curl_easy *data, struct connectdata *conn)
 
   if(data->req.no_body)
     /* in HTTP lingo, no body means using the HEAD request... */
+    {  // Begin logged block
     data->state.httpreq = HTTPREQ_HEAD;
+    LOG_VAR_INT(data->state.httpreq); // Auto-logged
+    }  // End logged block
 
   result = Curl_req_start(&data->req, data);
   if(!result) {

@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -2322,7 +2327,10 @@ static CURLcode verifystatus(struct Curl_cfilter *cf,
   CURLcode result = CURLE_OK;
   OCSP_RESPONSE *rsp = NULL;
   OCSP_BASICRESP *br = NULL;
-  X509_STORE     *st = NULL;
+    {  // Begin logged block
+    X509_STORE     *st = NULL;
+    LOG_VAR_INT(*st); // Auto-logged
+    }  // End logged block
   STACK_OF(X509) *ch = NULL;
   X509 *cert;
   OCSP_CERTID *id = NULL;

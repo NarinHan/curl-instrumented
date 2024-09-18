@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -505,7 +510,10 @@ static CURLcode rtsp_do(struct Curl_easy *data, bool *done)
 
     if(data->state.upload) {
       req_clen = data->state.infilesize;
-      data->state.httpreq = HTTPREQ_PUT;
+    {  // Begin logged block
+    data->state.httpreq = HTTPREQ_PUT;
+    LOG_VAR_INT(data->state.httpreq); // Auto-logged
+    }  // End logged block
       result = Curl_creader_set_fread(data, req_clen);
       if(result)
         goto out;
@@ -562,7 +570,10 @@ static CURLcode rtsp_do(struct Curl_easy *data, bool *done)
     }
     else if(rtspreq == RTSPREQ_GET_PARAMETER) {
       /* Check for an empty GET_PARAMETER (heartbeat) request */
-      data->state.httpreq = HTTPREQ_HEAD;
+    {  // Begin logged block
+    data->state.httpreq = HTTPREQ_HEAD;
+    LOG_VAR_INT(data->state.httpreq); // Auto-logged
+    }  // End logged block
       data->req.no_body = TRUE;
     }
   }
@@ -652,7 +663,10 @@ static CURLcode rtsp_filter_rtp(struct Curl_easy *data,
               DEBUGF(infof(data, "RTP rtsp_filter_rtp[SKIP] RTSP/ prefix, "
                            "skipping %zd bytes of junk", *pconsumed));
             }
-            rtspc->state = RTP_PARSE_SKIP;
+    {  // Begin logged block
+    rtspc->state = RTP_PARSE_SKIP;
+    LOG_VAR_INT(rtspc->state); // Auto-logged
+    }  // End logged block
             rtspc->in_header = TRUE;
             goto out;
           }
@@ -680,7 +694,10 @@ static CURLcode rtsp_filter_rtp(struct Curl_easy *data,
         *pconsumed += 1;
         ++buf;
         --blen;
-        rtspc->state = RTP_PARSE_CHANNEL;
+    {  // Begin logged block
+    rtspc->state = RTP_PARSE_CHANNEL;
+    LOG_VAR_INT(rtspc->state); // Auto-logged
+    }  // End logged block
       }
       break;
     }
@@ -691,7 +708,10 @@ static CURLcode rtsp_filter_rtp(struct Curl_easy *data,
       DEBUGASSERT(Curl_dyn_len(&rtspc->buf) == 1);
       if(!(data->state.rtp_channel_mask[idx] & (1 << off))) {
         /* invalid channel number, junk or BODY data */
-        rtspc->state = RTP_PARSE_SKIP;
+    {  // Begin logged block
+    rtspc->state = RTP_PARSE_SKIP;
+    LOG_VAR_INT(rtspc->state); // Auto-logged
+    }  // End logged block
         DEBUGASSERT(skip_len == 0);
         /* we do not consume this byte, it is BODY data */
         DEBUGF(infof(data, "RTSP: invalid RTP channel %d, skipping", idx));
@@ -719,7 +739,10 @@ static CURLcode rtsp_filter_rtp(struct Curl_easy *data,
       *pconsumed += 1;
       ++buf;
       --blen;
-      rtspc->state = RTP_PARSE_LEN;
+    {  // Begin logged block
+    rtspc->state = RTP_PARSE_LEN;
+    LOG_VAR_INT(rtspc->state); // Auto-logged
+    }  // End logged block
       break;
     }
 
@@ -738,7 +761,10 @@ static CURLcode rtsp_filter_rtp(struct Curl_easy *data,
         break;
       rtp_buf = Curl_dyn_ptr(&rtspc->buf);
       rtspc->rtp_len = RTP_PKT_LENGTH(rtp_buf) + 4;
-      rtspc->state = RTP_PARSE_DATA;
+    {  // Begin logged block
+    rtspc->state = RTP_PARSE_DATA;
+    LOG_VAR_INT(rtspc->state); // Auto-logged
+    }  // End logged block
       break;
     }
 
@@ -761,7 +787,10 @@ static CURLcode rtsp_filter_rtp(struct Curl_easy *data,
         result = rtp_client_write(data, Curl_dyn_ptr(&rtspc->buf),
                                   rtspc->rtp_len);
         Curl_dyn_free(&rtspc->buf);
-        rtspc->state = RTP_PARSE_SKIP;
+    {  // Begin logged block
+    rtspc->state = RTP_PARSE_SKIP;
+    LOG_VAR_INT(rtspc->state); // Auto-logged
+    }  // End logged block
         if(result)
           goto out;
       }

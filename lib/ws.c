@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -155,7 +160,10 @@ static void ws_dec_reset(struct ws_decoder *dec)
   dec->payload_offset = 0;
   dec->payload_len = 0;
   dec->head_len = dec->head_total = 0;
-  dec->state = WS_DEC_INIT;
+    {  // Begin logged block
+    dec->state = WS_DEC_INIT;
+    LOG_VAR_INT(dec->state); // Auto-logged
+    }  // End logged block
 }
 
 static void ws_dec_init(struct ws_decoder *dec)
@@ -302,7 +310,10 @@ static CURLcode ws_dec_pass(struct ws_decoder *dec,
   switch(dec->state) {
   case WS_DEC_INIT:
     ws_dec_reset(dec);
+    {  // Begin logged block
     dec->state = WS_DEC_HEAD;
+    LOG_VAR_INT(dec->state); // Auto-logged
+    }  // End logged block
     FALLTHROUGH();
   case WS_DEC_HEAD:
     result = ws_dec_read_head(dec, data, inraw);
@@ -316,7 +327,10 @@ static CURLcode ws_dec_pass(struct ws_decoder *dec,
       break;
     }
     /* head parsing done */
+    {  // Begin logged block
     dec->state = WS_DEC_PAYLOAD;
+    LOG_VAR_INT(dec->state); // Auto-logged
+    }  // End logged block
     if(dec->payload_len == 0) {
       ssize_t nwritten;
       const unsigned char tmp = '\0';
@@ -325,7 +339,10 @@ static CURLcode ws_dec_pass(struct ws_decoder *dec,
                                0, 0, write_ctx, &result);
       if(nwritten < 0)
         return result;
-      dec->state = WS_DEC_INIT;
+    {  // Begin logged block
+    dec->state = WS_DEC_INIT;
+    LOG_VAR_INT(dec->state); // Auto-logged
+    }  // End logged block
       break;
     }
     FALLTHROUGH();
@@ -335,7 +352,10 @@ static CURLcode ws_dec_pass(struct ws_decoder *dec,
     if(result)
       return result;
     /* paylod parsing done */
+    {  // Begin logged block
     dec->state = WS_DEC_INIT;
+    LOG_VAR_INT(dec->state); // Auto-logged
+    }  // End logged block
     break;
   default:
     /* we covered all enums above, but some code analyzers are whimps */

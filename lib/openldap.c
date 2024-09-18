@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                      _   _ ____  _
  *  Project         ___| | | |  _ \| |
@@ -459,7 +464,10 @@ static CURLcode oldap_perform_mechs(struct Curl_easy *data)
 /* Starts SASL bind. */
 static CURLcode oldap_perform_sasl(struct Curl_easy *data)
 {
-  saslprogress progress = SASL_IDLE;
+    saslprogress progress = SASL_IDLE;
+    {  // Begin logged block
+    LOG_VAR_INT(progress); // Auto-logged
+    }  // End logged block
   struct ldapconninfo *li = data->conn->proto.ldapc;
   CURLcode result = Curl_sasl_start(&li->sasl, data, TRUE, &progress);
 

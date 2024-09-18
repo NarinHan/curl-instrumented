@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -143,7 +148,10 @@ exit_zlib(struct Curl_easy *data,
   if(*zlib_init != ZLIB_UNINIT) {
     if(inflateEnd(z) != Z_OK && result == CURLE_OK)
       result = process_zlib_error(data, z);
+    {  // Begin logged block
     *zlib_init = ZLIB_UNINIT;
+    LOG_VAR_INT(*zlib_init); // Auto-logged
+    }  // End logged block
   }
 
   return result;
@@ -168,7 +176,10 @@ static CURLcode process_trailer(struct Curl_easy *data,
     result = exit_zlib(data, z, &zp->zlib_init, result);
   else {
     /* Only occurs for gzip with zlib < 1.2.0.4 or raw deflate. */
+    {  // Begin logged block
     zp->zlib_init = ZLIB_EXTERNAL_TRAILER;
+    LOG_VAR_INT(zp->zlib_init); // Auto-logged
+    }  // End logged block
   }
   return result;
 }
@@ -250,12 +261,18 @@ static CURLcode inflate_stream(struct Curl_easy *data,
         if(inflateInit2(z, -MAX_WBITS) == Z_OK) {
           z->next_in = orig_in;
           z->avail_in = nread;
-          zp->zlib_init = ZLIB_INFLATING;
+    {  // Begin logged block
+    zp->zlib_init = ZLIB_INFLATING;
+    LOG_VAR_INT(zp->zlib_init); // Auto-logged
+    }  // End logged block
           zp->trailerlen = 4; /* Tolerate up to 4 unknown trailer bytes. */
           done = FALSE;
           break;
         }
-        zp->zlib_init = ZLIB_UNINIT;    /* inflateEnd() already called. */
+    {  // Begin logged block
+    zp->zlib_init = ZLIB_UNINIT;    /* inflateEnd() already called. */
+    LOG_VAR_INT(zp->zlib_init); // Auto-logged
+    }  // End logged block
       }
       result = exit_zlib(data, z, &zp->zlib_init, process_zlib_error(data, z));
       break;
@@ -289,7 +306,10 @@ static CURLcode deflate_do_init(struct Curl_easy *data,
 
   if(inflateInit(z) != Z_OK)
     return process_zlib_error(data, z);
-  zp->zlib_init = ZLIB_INIT;
+    {  // Begin logged block
+    zp->zlib_init = ZLIB_INIT;
+    LOG_VAR_INT(zp->zlib_init); // Auto-logged
+    }  // End logged block
   return CURLE_OK;
 }
 
@@ -349,7 +369,10 @@ static CURLcode gzip_do_init(struct Curl_easy *data,
     if(inflateInit2(z, MAX_WBITS + 32) != Z_OK) {
       return process_zlib_error(data, z);
     }
+    {  // Begin logged block
     zp->zlib_init = ZLIB_INIT_GZIP; /* Transparent gzip decompress state */
+    LOG_VAR_INT(zp->zlib_init); // Auto-logged
+    }  // End logged block
   }
   else {
     /* we must parse the gzip header and trailer ourselves */
@@ -357,7 +380,10 @@ static CURLcode gzip_do_init(struct Curl_easy *data,
       return process_zlib_error(data, z);
     }
     zp->trailerlen = 8; /* A CRC-32 and a 32-bit input size (RFC 1952, 2.2) */
+    {  // Begin logged block
     zp->zlib_init = ZLIB_INIT; /* Initial call state */
+    LOG_VAR_INT(zp->zlib_init); // Auto-logged
+    }  // End logged block
   }
 
   return CURLE_OK;
@@ -495,7 +521,10 @@ static CURLcode gzip_do_write(struct Curl_easy *data,
     case GZIP_OK:
       z->next_in = (Bytef *) buf + hlen;
       z->avail_in = (uInt) (nbytes - hlen);
-      zp->zlib_init = ZLIB_GZIP_INFLATING; /* Inflating stream state */
+    {  // Begin logged block
+    zp->zlib_init = ZLIB_GZIP_INFLATING; /* Inflating stream state */
+    LOG_VAR_INT(zp->zlib_init); // Auto-logged
+    }  // End logged block
       break;
 
     case GZIP_UNDERFLOW:
@@ -512,7 +541,10 @@ static CURLcode gzip_do_write(struct Curl_easy *data,
         return exit_zlib(data, z, &zp->zlib_init, CURLE_OUT_OF_MEMORY);
       }
       memcpy(z->next_in, buf, z->avail_in);
-      zp->zlib_init = ZLIB_GZIP_HEADER;  /* Need more gzip header data state */
+    {  // Begin logged block
+    zp->zlib_init = ZLIB_GZIP_HEADER;  /* Need more gzip header data state */
+    LOG_VAR_INT(zp->zlib_init); // Auto-logged
+    }  // End logged block
       /* We do not have any data to inflate yet */
       return CURLE_OK;
 
@@ -543,7 +575,10 @@ static CURLcode gzip_do_write(struct Curl_easy *data,
       /* Do not point into the malloced block since we just freed it */
       z->next_in = (Bytef *) buf + hlen + nbytes - z->avail_in;
       z->avail_in = z->avail_in - (uInt)hlen;
-      zp->zlib_init = ZLIB_GZIP_INFLATING;   /* Inflating stream state */
+    {  // Begin logged block
+    zp->zlib_init = ZLIB_GZIP_INFLATING;   /* Inflating stream state */
+    LOG_VAR_INT(zp->zlib_init); // Auto-logged
+    }  // End logged block
       break;
 
     case GZIP_UNDERFLOW:

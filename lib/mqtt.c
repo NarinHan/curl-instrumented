@@ -1,3 +1,8 @@
+#ifndef LOGGING_H
+#define LOGGING_H
+#include "logging.h"
+#endif
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -812,7 +817,10 @@ static CURLcode mqtt_doing(struct Curl_easy *data, bool *done)
         result = mqtt_disconnect(data);
         *done = TRUE;
       }
-      mqtt->nextstate = MQTT_FIRST;
+    {  // Begin logged block
+    mqtt->nextstate = MQTT_FIRST;
+    LOG_VAR_INT(mqtt->nextstate); // Auto-logged
+    }  // End logged block
     }
     else {
       result = mqtt_subscribe(data);
