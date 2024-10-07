@@ -181,7 +181,7 @@ jobs:
           source $HOME/venv/bin/activate
           python3 -m pip install impacket
 
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: 'toolchain versions'
         run: |
@@ -329,7 +329,7 @@ jobs:
               fi;;
           esac
 
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: 'toolchain versions'
         run: |
@@ -477,7 +477,7 @@ jobs:
           echo autoconf automake libtool openssl | xargs -Ix -n1 echo brew '"x"' > /tmp/Brewfile
           while [[ $? == 0 ]]; do for i in 1 2 3; do brew update && brew bundle install --no-lock --file /tmp/Brewfile && break 2 || { echo Error: wait to try again; sleep 10; } done; false Too many retries; done
 
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
+      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4
 
       - name: 'toolchain versions'
         run: |
